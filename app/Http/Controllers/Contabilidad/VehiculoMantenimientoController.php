@@ -240,7 +240,7 @@ class VehiculoMantenimientoController extends Controller
     private function filtrar(Request $request): Builder
     {
         return VehiculoMantenimiento::query()
-            ->when($request->filled('vehiculo'), fn ($q) => $q->whereHas('vehiculo', fn ($v) => $v->where('placa', 'like', '%' . $request->vehiculo . '%')))
+            ->when($request->filled('vehiculo'), fn ($q) => $q->whereHas('vehiculo', fn ($v) => $v->whereLike('placa', '%' . $request->vehiculo . '%')))
             ->when($request->filled('estado'), fn ($q) => $q->where('estado', $request->estado))
             ->when($request->filled('tipo_mantenimiento'), fn ($q) => $q->where('tipo_mantenimiento', $request->tipo_mantenimiento))
             ->when($request->filled('fecha_desde'), fn ($q) => $q->whereDate('fecha_programada', '>=', $request->fecha_desde))

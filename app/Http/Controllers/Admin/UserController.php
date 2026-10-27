@@ -17,10 +17,10 @@ class UserController extends Controller
             ->when($request->filled('buscar'), function ($query) use ($request) {
                 $b = $request->buscar;
                 $query->where(fn ($q) => $q
-                    ->where('name', 'like', "%{$b}%")
-                    ->orWhere('apellidos', 'like', "%{$b}%")
-                    ->orWhere('email', 'like', "%{$b}%")
-                    ->orWhere('dni', 'like', "%{$b}%"));
+                    ->whereLike('name', "%{$b}%")
+                    ->orWhereLike('apellidos', "%{$b}%")
+                    ->orWhereLike('email', "%{$b}%")
+                    ->orWhereLike('dni', "%{$b}%"));
             })
             ->when($request->filled('estado'), fn ($q) => $q->where('estado', $request->estado))
             ->when($request->filled('rol'), fn ($q) => $q->role($request->rol))

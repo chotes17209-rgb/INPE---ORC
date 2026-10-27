@@ -220,11 +220,11 @@ class OperacionReciprocaController extends Controller
             ->when($request->filled('buscar'), function (Builder $query) use ($request) {
                 $q = $request->buscar;
                 $query->where(fn ($sq) => $sq
-                    ->where('numero_operacion', 'like', "%{$q}%")
-                    ->orWhere('entidad_proveedora', 'like', "%{$q}%")
-                    ->orWhere('ruc_entidad', 'like', "%{$q}%")
-                    ->orWhere('numero_factura', 'like', "%{$q}%")
-                    ->orWhere('numero_contrato', 'like', "%{$q}%"));
+                    ->whereLike('numero_operacion', "%{$q}%")
+                    ->orWhereLike('entidad_proveedora', "%{$q}%")
+                    ->orWhereLike('ruc_entidad', "%{$q}%")
+                    ->orWhereLike('numero_factura', "%{$q}%")
+                    ->orWhereLike('numero_contrato', "%{$q}%"));
             })
             ->when($request->filled('tipo_servicio'), fn ($q) => $q->where('tipo_servicio', $request->tipo_servicio))
             ->when($request->filled('estado'), fn ($q) => $q->where('estado', $request->estado))

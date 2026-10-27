@@ -211,11 +211,11 @@ class AlimentoController extends Controller
             ->when($request->filled('buscar'), function (Builder $query) use ($request) {
                 $q = $request->buscar;
                 $query->where(fn ($sq) => $sq
-                    ->where('numero_registro', 'like', "%{$q}%")
-                    ->orWhere('proveedor_razon_social', 'like', "%{$q}%")
-                    ->orWhere('proveedor_ruc', 'like', "%{$q}%")
-                    ->orWhere('numero_contrato', 'like', "%{$q}%")
-                    ->orWhere('orden_servicio', 'like', "%{$q}%"));
+                    ->whereLike('numero_registro', "%{$q}%")
+                    ->orWhereLike('proveedor_razon_social', "%{$q}%")
+                    ->orWhereLike('proveedor_ruc', "%{$q}%")
+                    ->orWhereLike('numero_contrato', "%{$q}%")
+                    ->orWhereLike('orden_servicio', "%{$q}%"));
             })
             ->when($request->filled('penal'), fn ($q) => $q->where('penal', $request->penal))
             ->when($request->filled('estado'), fn ($q) => $q->where('estado', $request->estado))

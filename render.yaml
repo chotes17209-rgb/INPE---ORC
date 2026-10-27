@@ -1,0 +1,44 @@
+# Blueprint de Render: crea el servicio web (Docker) y la base de datos PostgreSQL ya conectados.
+# Uso: Render → New → Blueprint → seleccionar este repositorio.
+services:
+  - type: web
+    name: inpe-orc
+    runtime: docker
+    plan: free
+    region: virginia
+    branch: main
+    healthCheckPath: /up
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_LOCALE
+        value: es
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: SESSION_DRIVER
+        value: file
+      - key: CACHE_STORE
+        value: file
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
+        fromDatabase:
+          name: inpe-orc-db
+          property: connectionString
+      - key: SEED_ON_DEPLOY
+        value: "true"
+      - key: IA_API_KEY
+        sync: false
+      - key: APIPERU_TOKEN
+        sync: false
+
+databases:
+  - name: inpe-orc-db
+    plan: free
+    region: virginia
+    databaseName: inpe_orc
+    user: inpe_orc

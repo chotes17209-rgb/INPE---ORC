@@ -82,6 +82,18 @@ Ingrese a <http://localhost:8000>. Para una guía paso a paso con XAMPP, consult
 
 Los días de anticipación de las alertas se configuran en `config/inpe.php`.
 
+### Despliegue en Render
+
+El repositorio incluye un `Dockerfile` (PHP 8.3 + Apache) y un *Blueprint* (`render.yaml`) que crea el servicio web y la base de datos PostgreSQL ya conectados.
+
+1. En Render: **New → Blueprint** y seleccione este repositorio.
+2. Render crea el servicio `inpe-orc` (Docker) y la base de datos `inpe-orc-db` (PostgreSQL), genera `APP_KEY` y enlaza `DB_URL`.
+3. Opcional: registre `IA_API_KEY` y `APIPERU_TOKEN` en **Environment**.
+
+En cada despliegue se ejecutan las migraciones y los datos iniciales (variable `SEED_ON_DEPLOY`, que no duplica registros). Si crea el servicio manualmente, elija el *runtime* **Docker** (no Node.js) y defina `APP_KEY`, `DB_CONNECTION=pgsql` y `DB_URL` con la *Internal Database URL* de la base de datos.
+
+> La base de datos gratuita de Render se elimina a los 30 días; para uso continuo elija un plan de pago.
+
 ### Tarea programada
 
 El comando `operaciones:verificar-vencimientos` actualiza los estados vencidos y genera notificaciones de pagos y documentos vehiculares próximos a vencer. Se ejecuta todos los días a las 07:00 si el programador de Laravel está activo:

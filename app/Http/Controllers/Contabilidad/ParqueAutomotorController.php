@@ -173,9 +173,9 @@ class ParqueAutomotorController extends Controller
             ->when($request->filled('buscar'), function (Builder $query) use ($request) {
                 $b = $request->buscar;
                 $query->where(fn ($q) => $q
-                    ->where('placa', 'like', "%{$b}%")
-                    ->orWhere('marca', 'like', "%{$b}%")
-                    ->orWhere('modelo', 'like', "%{$b}%"));
+                    ->whereLike('placa', "%{$b}%")
+                    ->orWhereLike('marca', "%{$b}%")
+                    ->orWhereLike('modelo', "%{$b}%"));
             })
             ->when($request->filled('estado'), fn ($q) => $q->where('estado', $request->estado))
             ->when($request->filled('tipo'), fn ($q) => $q->where('tipo', $request->tipo))
