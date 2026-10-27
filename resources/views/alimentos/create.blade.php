@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(request()->header('X-Modal') ? 'layouts.modal' : 'layouts.app')
 @section('title', 'Nuevo registro de alimentos')
 @section('page-title', 'Nuevo registro de alimentos')
 @section('page-subtitle', 'Registre el comprobante de un suministro de alimentos para los establecimientos penitenciarios.')

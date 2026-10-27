@@ -1,7 +1,8 @@
 @extends('layouts.app')
 @section('title', 'Resumen mensual de operaciones recíprocas')
-@section('page-title', 'Resumen mensual de operaciones recíprocas')
-@section('page-subtitle', 'Importes por periodo de consumo — ejercicio ' . $anio . '.')
+@section('page-title', 'Operaciones recíprocas')
+@section('page-subtitle', 'Resumen mensual: importes por periodo de consumo — ejercicio ' . $anio . '.')
+@section('pestanas')@include('partials.pestanas', ['modulo' => 'operaciones'])@endsection
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('operaciones.registros.index') }}">Operaciones recíprocas</a></li>
     <li class="breadcrumb-item active" aria-current="page">Resumen mensual</li>

@@ -1,8 +1,8 @@
-# Sistema Integrado de Gestión Contable — INPE Oficina Regional Centro
+# Sistema Integrado de Gestión Administrativa — INPE Oficina Regional Centro
 
-> **Tesis:** *Implementación de un Sistema ERP con Inteligencia Artificial para la Gestión Integral del Área de Contabilidad de la Oficina Regional Centro del Instituto Nacional Penitenciario (INPE ORC).*
+> **Tesis:** *Implementación de un Sistema ERP con Inteligencia Artificial para la Gestión Integral del Área Administrativa de la Oficina Regional Centro del Instituto Nacional Penitenciario (INPE ORC).*
 
-Aplicación web desarrollada en **Laravel 12** que integra en una sola plataforma los procesos del Área de Contabilidad de la Oficina Regional Centro del INPE: control del parque automotor, suministro de alimentos a los establecimientos penitenciarios y operaciones recíprocas (servicios básicos, contratos y convenios), con reportes institucionales y un asistente de inteligencia artificial.
+Aplicación web desarrollada en **Laravel 12** que integra en una sola plataforma los procesos del Área Administrativa de la Oficina Regional Centro del INPE: control del parque automotor, suministro de alimentos a los establecimientos penitenciarios y operaciones recíprocas (servicios básicos, contratos y convenios), con reportes institucionales y un asistente de inteligencia artificial.
 
 ---
 
@@ -78,7 +78,10 @@ Ingrese a <http://localhost:8000>. Para una guía paso a paso con XAMPP, consult
 |---|---|
 | `INPE_*` | Datos institucionales que aparecen en la interfaz y en los reportes PDF. |
 | `IA_API_KEY`, `IA_MODEL`, `IA_BASE_URL` | Proveedor del asistente inteligente. Se mantiene la compatibilidad con `OPENAI_API_KEY` y `OPENAI_MODEL`. |
-| `APIPERU_TOKEN` | Consulta de RUC ante SUNAT. La consulta se hace desde el servidor, por lo que el token no se expone en el navegador. |
+| `JSONPE_TOKEN` | Consulta de contribuyentes en json.pe en ambos sentidos: RUC → razón social y razón social → RUC. |
+| `APIPERU_TOKEN`, `APIPERU_URL` | Alternativa para RUC → razón social (decolecta o apis.net.pe). |
+
+La consulta de RUC se hace desde el servidor, por lo que los tokens no se exponen en el navegador. Sin token, la búsqueda por nombre sugiere los proveedores ya registrados en el sistema.
 
 Los días de anticipación de las alertas se configuran en `config/inpe.php`.
 
@@ -113,7 +116,7 @@ app/
 │   │   ├── Admin/             Usuarios y roles
 │   │   ├── AI/                Asistente inteligente
 │   │   ├── Auth/              Inicio de sesión (con bloqueo por intentos fallidos)
-│   │   ├── Contabilidad/      Parque automotor, mantenimientos, alimentos, operaciones y reportes
+│   │   ├── Administrativo/    Parque automotor, mantenimientos, alimentos, operaciones y reportes
 │   │   └── Servicios/         Consulta de RUC
 │   ├── Middleware/            Verificación de cuenta activa
 │   └── Requests/              Reglas de validación de cada formulario
@@ -151,7 +154,7 @@ resources/views/
 - Validación en el servidor mediante *Form Requests*, con mensajes en español.
 - Protección CSRF en todos los formularios y confirmación previa de las acciones irreversibles.
 - Auditoría automática de cambios (usuario, IP, valores anteriores y nuevos).
-- Eliminación lógica (*soft delete*) en los registros contables.
+- Eliminación lógica (*soft delete*) en los registros administrativos.
 - Claves de servicios externos solo en el servidor (`.env`), nunca en el navegador.
 - Las respuestas del asistente de IA se muestran como texto, sin interpretar HTML.
 

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(request()->header('X-Modal') ? 'layouts.modal' : 'layouts.app')
 @section('title', 'Mantenimiento ' . ($mantenimiento->vehiculo?->placa ?? ''))
 @section('page-title', 'Mantenimiento ' . mb_strtolower($mantenimiento->tipo_label))
 @section('page-subtitle', ($mantenimiento->vehiculo?->placa ?? '') . ' · ' . ($mantenimiento->vehiculo?->descripcion ?? '') . ' · Programado para el ' . $mantenimiento->fecha_programada->format('d/m/Y'))
@@ -9,13 +9,13 @@
 @endsection
 
 @section('page-actions')
-    <a href="{{ route('parque.vehiculos.show', $mantenimiento->vehiculo_id) }}" class="btn btn-outline-primary"><i class="bi bi-truck-front me-1" aria-hidden="true"></i>Ver vehículo</a>
+    <a href="{{ route('parque.vehiculos.show', $mantenimiento->vehiculo_id) }}" data-modal class="btn btn-outline-primary"><i class="bi bi-truck-front me-1" aria-hidden="true"></i>Ver vehículo</a>
     @if($mantenimiento->esta_abierto)
         @can('registrar')
-            <a href="{{ route('parque.mantenimientos.edit', $mantenimiento) }}" class="btn btn-outline-primary"><i class="bi bi-pencil me-1" aria-hidden="true"></i>Editar</a>
+            <a href="{{ route('parque.mantenimientos.edit', $mantenimiento) }}" data-modal class="btn btn-outline-primary"><i class="bi bi-pencil me-1" aria-hidden="true"></i>Editar</a>
         @endcan
         @can('aprobar')
-            <a href="{{ route('parque.mantenimientos.completar', $mantenimiento) }}" class="btn btn-success"><i class="bi bi-check2-circle me-1" aria-hidden="true"></i>Registrar conformidad</a>
+            <a href="{{ route('parque.mantenimientos.completar', $mantenimiento) }}" data-modal class="btn btn-success"><i class="bi bi-check2-circle me-1" aria-hidden="true"></i>Registrar conformidad</a>
         @endcan
     @endif
 @endsection

@@ -51,7 +51,7 @@ class AppServiceProvider extends ServiceProvider
      * | aprobar      |      ✔      |   ✔   |    ✔     |           |              |
      * | administrar  |      ✔      |   ✔   |          |           |              |
      *
-     * - registrar:   crear y editar registros de los módulos contables.
+     * - registrar:   crear y editar registros de los módulos administrativos.
      * - aprobar:     registrar pagos, completar mantenimientos, cambiar estados y eliminar.
      * - administrar: gestionar usuarios y roles.
      */

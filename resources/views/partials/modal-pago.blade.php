@@ -3,7 +3,7 @@
 <div class="modal fade" id="modalPago" tabindex="-1" aria-labelledby="modalPagoTitulo" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <form method="POST" action="#">
+            <form method="POST" action="#" data-ajax>
                 @csrf @method('PATCH')
                 <div class="modal-header">
                     <div>

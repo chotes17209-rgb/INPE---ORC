@@ -73,3 +73,30 @@ Este documento resume el análisis del sistema (versión 2.0) y los cambios real
 2. Ejecutar `composer install` y probar cada módulo con datos reales antes de la sustentación.
 3. Agregar pruebas automatizadas (`tests/Feature`) de los flujos principales: registrar, registrar pago y permisos por rol.
 4. Si la entidad lo requiere, integrar los clasificadores de gasto y metas presupuestales del SIAF en la ejecución del gasto.
+
+# Versión 4.0 — Rediseño institucional y CRUD en ventanas flotantes
+
+## 1. Identidad visual del INPE
+- Paleta tomada del logotipo: dorado, negro, verde y rojo. Se eliminó el azul.
+- Escudo en el menú lateral, logotipo completo en el inicio de sesión y en las páginas de error, y escudo en el membrete de los PDF.
+- Gráficos, tablas y estados con los mismos colores.
+
+## 2. Pensado para personas mayores
+- Letra base de 17 px, botones y campos más grandes, alto contraste (botón principal dorado con letra negra).
+- Botones de acción con texto e icono: **Ver** (ojo), **Editar**, **Pagar**, **Eliminar**, **Conformidad**.
+- Inicio con accesos rápidos grandes a las tareas más frecuentes.
+
+## 3. Menú ordenado y CRUD completo en cada listado
+- Un solo acceso por módulo: Inicio, Parque automotor, Suministro de alimentos, Operaciones recíprocas, Reportes, Asistente inteligente, Usuarios y permisos.
+- Se retiraron del menú las opciones sueltas «Nuevo registro» y «Resumen mensual». Dentro de cada módulo hay pestañas (Registros / Resumen mensual, Vehículos / Mantenimientos, Usuarios / Roles, Reportes / Ejecución del gasto).
+- Registrar, ver, editar, pagar, dar conformidad y eliminar se hace **desde el mismo listado**, en ventanas flotantes. Al guardar, el listado se actualiza sin perder los filtros.
+- Los errores de validación se muestran dentro de la ventana, junto a cada campo.
+- Las mismas pantallas siguen funcionando como página completa (enlaces directos, notificaciones).
+
+## 4. Consulta de RUC en ambos sentidos
+- Al escribir los 11 dígitos del RUC se completan la razón social y el domicilio.
+- Al escribir el nombre del proveedor se muestra una lista de contribuyentes con su RUC.
+- Fuentes: json.pe (`JSONPE_TOKEN`), decolecta / apis.net.pe (`APIPERU_TOKEN`) y los proveedores ya registrados en el sistema.
+
+## 5. Terminología
+- «Área contable» pasó a «Área Administrativa» en toda la aplicación, la documentación y los reportes.

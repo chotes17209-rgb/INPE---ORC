@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(request()->header('X-Modal') ? 'layouts.modal' : 'layouts.app')
 @section('title', 'Nuevo usuario')
 @section('page-title', 'Nuevo usuario')
 @section('page-subtitle', 'Cree una cuenta de acceso para el personal autorizado.')

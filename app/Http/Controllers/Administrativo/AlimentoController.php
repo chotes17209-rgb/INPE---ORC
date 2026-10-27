@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Contabilidad;
+namespace App\Http\Controllers\Administrativo;
 
 use App\Http\Controllers\Controller;
 use App\Support\DocumentoPdf;
@@ -54,8 +54,7 @@ class AlimentoController extends Controller
 
         $registro = Alimento::create($data);
 
-        return redirect()->route('alimentos.registros.show', $registro)
-            ->with('success', "Se registró el suministro de alimentos {$registro->numero_registro}.");
+        return $this->exito("Se registró el suministro de alimentos {$registro->numero_registro}.", route('alimentos.registros.show', $registro));
     }
 
     public function show(Alimento $registro)
@@ -68,8 +67,7 @@ class AlimentoController extends Controller
     public function edit(Alimento $registro)
     {
         if (! $registro->es_editable) {
-            return redirect()->route('alimentos.registros.show', $registro)
-                ->with('info', 'Un registro pagado no puede modificarse.');
+            return $this->aviso('Un registro pagado no puede modificarse.', route('alimentos.registros.show', $registro), 'info');
         }
 
         return view('alimentos.edit', compact('registro'));
@@ -78,8 +76,7 @@ class AlimentoController extends Controller
     public function update(AlimentoRequest $request, Alimento $registro)
     {
         if (! $registro->es_editable) {
-            return redirect()->route('alimentos.registros.show', $registro)
-                ->with('info', 'Un registro pagado no puede modificarse.');
+            return $this->aviso('Un registro pagado no puede modificarse.', route('alimentos.registros.show', $registro), 'info');
         }
 
         $data = array_filter($request->validated(), fn ($v, $k) => $k !== 'estado' || filled($v), ARRAY_FILTER_USE_BOTH);
@@ -95,26 +92,24 @@ class AlimentoController extends Controller
 
         $registro->update($data);
 
-        return redirect()->route('alimentos.registros.show', $registro)
-            ->with('success', 'Los cambios fueron guardados correctamente.');
+        return $this->exito('Los cambios fueron guardados correctamente.', route('alimentos.registros.show', $registro));
     }
 
     public function destroy(Alimento $registro)
     {
         if (! $registro->es_editable) {
-            return back()->with('error', 'Un registro pagado no puede eliminarse.');
+            return $this->aviso('Un registro pagado no puede eliminarse.');
         }
 
         $registro->delete();
 
-        return redirect()->route('alimentos.registros.index')
-            ->with('success', "Se eliminó el registro {$registro->numero_registro}.");
+        return $this->exito("Se eliminó el registro {$registro->numero_registro}.", route('alimentos.registros.index'), true);
     }
 
     public function aprobar(RegistrarPagoRequest $request, Alimento $registro)
     {
         if (! $registro->puede_pagarse) {
-            return back()->with('error', 'El registro seleccionado no admite el registro de pagos.');
+            return $this->aviso('El registro seleccionado no admite el registro de pagos.');
         }
 
         $registro->update([
@@ -124,7 +119,7 @@ class AlimentoController extends Controller
             'fecha_aprobacion' => now(),
         ]);
 
-        return back()->with('success', "Se registró el pago de {$registro->numero_registro}.");
+        return $this->exito("Se registró el pago de {$registro->numero_registro}.", url()->previous());
     }
 
     public function resumenMensual(Request $request)

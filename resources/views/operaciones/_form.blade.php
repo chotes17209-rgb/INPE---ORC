@@ -8,7 +8,7 @@
     }
 @endphp
 
-<x-seccion numero="1" titulo="Servicio y entidad proveedora" ayuda="Ingrese el RUC y presione «Consultar» para completar los datos desde SUNAT.">
+<x-seccion numero="1" titulo="Servicio y entidad proveedora" ayuda="Escriba el RUC y los datos se completarán solos. Si no conoce el RUC, escriba el nombre de la entidad y elija de la lista.">
     <div class="row g-3">
         <div class="col-md-6 col-lg-4">
             <x-label for="tipo_servicio" requerido>Tipo de servicio</x-label>
@@ -33,9 +33,9 @@
                 <input type="text" name="ruc_entidad" id="ruc_entidad" inputmode="numeric" maxlength="11"
                        class="form-control @error('ruc_entidad') is-invalid @enderror" value="{{ old('ruc_entidad', $operacion->ruc_entidad) }}" placeholder="20XXXXXXXXX">
                 <button type="button" class="btn btn-outline-primary"
-                        data-ruc-url="{{ route('servicios.ruc', '__RUC__') }}" data-ruc-input="#ruc_entidad"
+                        data-ruc-url="{{ route('servicios.ruc', '__RUC__') }}" data-ruc-buscar="{{ route('servicios.ruc-buscar') }}" data-ruc-sugerir="#entidad_proveedora" data-ruc-input="#ruc_entidad"
                         data-ruc-razon="#razon_social" data-ruc-nombre="#entidad_proveedora" data-ruc-direccion="#direccion_entidad" data-ruc-estado="#ruc_entidad_estado">
-                    <i class="bi bi-search me-1" aria-hidden="true"></i>Consultar
+                    <i class="bi bi-search me-1" aria-hidden="true"></i>Buscar
                 </button>
             </div>
             <div id="ruc_entidad_estado" class="form-text"></div>

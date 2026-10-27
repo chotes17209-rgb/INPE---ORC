@@ -14,10 +14,10 @@ return [
     'siglas'      => env('INPE_SIGLAS', 'INPE'),
     'oficina'     => env('INPE_OFICINA', 'Oficina Regional Centro'),
     'sede'        => env('INPE_SEDE', 'Huancayo'),
-    'area'        => env('INPE_AREA', 'Área de Contabilidad'),
+    'area'        => env('INPE_AREA', 'Área Administrativa'),
     'ruc'         => env('INPE_RUC', '20131370564'),
-    'sistema'     => env('INPE_SISTEMA', 'Sistema Integrado de Gestión Contable'),
-    'version'     => '3.0',
+    'sistema'     => env('INPE_SISTEMA', 'Sistema Integrado de Gestión Administrativa'),
+    'version'     => '4.0',
 
     // Días de anticipación para considerar un documento "por vencer"
     'dias_alerta' => [

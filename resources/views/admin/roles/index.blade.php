@@ -1,14 +1,15 @@
 @extends('layouts.app')
 @section('title', 'Roles y permisos')
-@section('page-title', 'Roles y permisos')
-@section('page-subtitle', 'Perfiles de acceso del sistema y acciones autorizadas para cada uno.')
+@section('page-title', 'Usuarios y permisos')
+@section('page-subtitle', 'Roles: perfiles de acceso del sistema y acciones autorizadas para cada uno.')
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('admin.usuarios.index') }}">Usuarios</a></li>
     <li class="breadcrumb-item active" aria-current="page">Roles y permisos</li>
 @endsection
 @section('page-actions')
-    <a href="{{ route('admin.roles.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Nuevo rol</a>
+    <a href="{{ route('admin.roles.create') }}" class="btn btn-primary btn-lg" data-modal data-modal-tamano="md"><i class="bi bi-plus-circle me-2" aria-hidden="true"></i>Nuevo rol</a>
 @endsection
+@section('pestanas')@include('partials.pestanas', ['modulo' => 'admin'])@endsection
 
 @section('content')
 @php
@@ -59,7 +60,7 @@
             <div class="card-header"><i class="bi bi-shield-lock card-header__icon" aria-hidden="true"></i> Roles registrados</div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
-                    <thead><tr><th scope="col">Rol</th><th scope="col" class="text-end">Usuarios</th><th scope="col" class="text-end"><span class="visually-hidden">Acciones</span></th></tr></thead>
+                    <thead><tr><th scope="col">Rol</th><th scope="col" class="text-end">Usuarios</th><th scope="col" class="text-end">Acciones</th></tr></thead>
                     <tbody>
                     @foreach($roles as $r)
                         <tr>
@@ -71,11 +72,8 @@
                             <td>
                                 @unless(in_array($r->name, $rolesSistema, true))
                                     <div class="table-actions">
-                                        <a href="{{ route('admin.roles.edit', $r) }}" class="btn btn-sm btn-light btn-icon" title="Editar" aria-label="Editar rol"><i class="bi bi-pencil" aria-hidden="true"></i></a>
-                                        <form method="POST" action="{{ route('admin.roles.destroy', $r) }}" data-confirm="Se eliminará el rol «{{ $r->name }}»." data-confirm-title="Eliminar rol" data-confirm-btn="Eliminar">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-light btn-icon text-danger" title="Eliminar" aria-label="Eliminar rol"><i class="bi bi-trash" aria-hidden="true"></i></button>
-                                        </form>
+                                        <x-accion tipo="editar" :href="route('admin.roles.edit', $r)" :nombre="'el rol ' . $r->name" data-modal-tamano="md" />
+                                        <x-accion tipo="eliminar" :href="route('admin.roles.destroy', $r)" :nombre="'el rol ' . $r->name" confirmar="Se eliminará el rol «{{ $r->name }}»." />
                                     </div>
                                 @else
                                     <span class="d-block text-end text-muted"><i class="bi bi-lock" title="Rol protegido" aria-label="Rol protegido"></i></span>

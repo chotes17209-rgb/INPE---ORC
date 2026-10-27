@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(request()->header('X-Modal') ? 'layouts.modal' : 'layouts.app')
 @section('title', 'Nuevo vehículo')
 @section('page-title', 'Registrar vehículo')
 @section('page-subtitle', 'Incorpore una unidad vehicular al inventario del parque automotor.')

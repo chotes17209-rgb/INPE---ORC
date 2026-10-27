@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(request()->header('X-Modal') ? 'layouts.modal' : 'layouts.app')
 @section('title', 'Nueva operación recíproca')
 @section('page-title', 'Nueva operación recíproca')
 @section('page-subtitle', 'Registre el comprobante de un servicio básico, contrato o convenio con otra entidad.')

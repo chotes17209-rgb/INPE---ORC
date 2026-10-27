@@ -1,11 +1,11 @@
 @extends('layouts.app')
 @section('title', 'Reportes')
-@section('page-title', 'Reportes de gestión')
+@section('page-title', 'Reportes')
 @section('page-subtitle', 'Consolidado del gasto por módulo y por proveedor — ejercicio ' . $anio . '.')
 @section('breadcrumb')<li class="breadcrumb-item active" aria-current="page">Reportes</li>@endsection
 
+@section('pestanas')@include('partials.pestanas', ['modulo' => 'reportes'])@endsection
 @section('page-actions')
-    <a href="{{ route('reportes.balance-presupuestal', ['anio' => $anio]) }}" class="btn btn-outline-primary"><i class="bi bi-clipboard-data me-1" aria-hidden="true"></i>Ejecución del gasto</a>
     <div class="dropdown">
         <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-download me-1" aria-hidden="true"></i>Reporte general</button>
         <ul class="dropdown-menu dropdown-menu-end">
@@ -52,9 +52,9 @@
             <div class="card-header">
                 <i class="bi bi-bar-chart card-header__icon" aria-hidden="true"></i> Gasto mensual por módulo
                 <span class="card-header__aside d-none d-md-flex gap-3">
-                    <span class="leyenda" style="--c:#12355b">Mantenimiento</span>
-                    <span class="leyenda" style="--c:#b08a2e">Alimentos</span>
-                    <span class="leyenda" style="--c:#1f6391">Servicios básicos</span>
+                    <span class="leyenda" style="--c:#1F1F1F">Mantenimiento</span>
+                    <span class="leyenda" style="--c:#E0AE0B">Alimentos</span>
+                    <span class="leyenda" style="--c:#0C9044">Servicios básicos</span>
                 </span>
             </div>
             <div class="card-body"><canvas id="graficoMensual" height="120" role="img" aria-label="Gasto mensual por módulo"></canvas></div>
@@ -192,9 +192,9 @@ document.addEventListener('DOMContentLoaded', () => {
         data: {
             labels: meses,
             datasets: [
-                { label: 'Mantenimiento',     data: @json(array_values(array_column($mantenimientoMensual, 'total'))), backgroundColor: '#12355b', borderRadius: 3, maxBarThickness: 22 },
-                { label: 'Alimentos',         data: @json(array_values(array_column($alimentosMensual, 'total'))),     backgroundColor: '#b08a2e', borderRadius: 3, maxBarThickness: 22 },
-                { label: 'Servicios básicos', data: @json(array_values(array_column($serviciosMensual, 'total'))),     backgroundColor: '#1f6391', borderRadius: 3, maxBarThickness: 22 },
+                { label: 'Mantenimiento',     data: @json(array_values(array_column($mantenimientoMensual, 'total'))), backgroundColor: '#1F1F1F', borderRadius: 3, maxBarThickness: 22 },
+                { label: 'Alimentos',         data: @json(array_values(array_column($alimentosMensual, 'total'))),     backgroundColor: '#E0AE0B', borderRadius: 3, maxBarThickness: 22 },
+                { label: 'Servicios básicos', data: @json(array_values(array_column($serviciosMensual, 'total'))),     backgroundColor: '#0C9044', borderRadius: 3, maxBarThickness: 22 },
             ]
         },
         options: {

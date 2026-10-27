@@ -34,13 +34,13 @@ class RoleController extends Controller
 
         Role::create(['name' => $request->name, 'guard_name' => 'web']);
 
-        return redirect()->route('admin.roles.index')->with('success', 'El rol fue creado correctamente.');
+        return $this->exito('El rol fue creado correctamente.', route('admin.roles.index'));
     }
 
     public function edit(Role $role)
     {
         if (in_array($role->name, self::ROLES_SISTEMA, true)) {
-            return redirect()->route('admin.roles.index')->with('info', 'Los roles del sistema no pueden modificarse.');
+            return $this->aviso('Los roles del sistema no pueden modificarse.', route('admin.roles.index'), 'info');
         }
 
         return view('admin.roles.edit', compact('role'));
@@ -58,20 +58,20 @@ class RoleController extends Controller
 
         $role->update(['name' => $request->name]);
 
-        return redirect()->route('admin.roles.index')->with('success', 'El rol fue actualizado.');
+        return $this->exito('El rol fue actualizado.', route('admin.roles.index'));
     }
 
     public function destroy(Role $role)
     {
         if (in_array($role->name, self::ROLES_SISTEMA, true)) {
-            return back()->with('error', 'Los roles del sistema no pueden eliminarse.');
+            return $this->aviso('Los roles del sistema no pueden eliminarse.');
         }
         if ($role->users()->exists()) {
-            return back()->with('error', 'No se puede eliminar un rol que tiene usuarios asignados.');
+            return $this->aviso('No se puede eliminar un rol que tiene usuarios asignados.');
         }
 
         $role->delete();
 
-        return redirect()->route('admin.roles.index')->with('success', 'El rol fue eliminado.');
+        return $this->exito('El rol fue eliminado.', route('admin.roles.index'));
     }
 }

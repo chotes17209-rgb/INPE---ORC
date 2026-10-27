@@ -1,7 +1,7 @@
 {
-    "name": "inpe-orc/erp-contabilidad",
-    "description": "ERP Integral para el Area de Contabilidad del INPE ORC",
-    "keywords": ["laravel", "erp", "inpe", "contabilidad"],
+    "name": "inpe-orc/erp-administrativo",
+    "description": "ERP Integral para el Área Administrativa del INPE ORC",
+    "keywords": ["laravel", "erp", "inpe", "administracion"],
     "license": "MIT",
     "type": "project",
     "require": {

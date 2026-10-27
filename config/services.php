@@ -25,6 +25,17 @@ return [
     | Consulta de RUC (SUNAT) — apis.net.pe
     |--------------------------------------------------------------------------
     */
+    /*
+     | Consulta de contribuyentes (SUNAT). Se usa el primer servicio configurado:
+     |  - json.pe:  RUC → razón social y razón social → RUC (JSONPE_TOKEN).
+     |  - decolecta / apis.net.pe: RUC → razón social (APIPERU_TOKEN y APIPERU_URL).
+     | Sin token, la búsqueda por nombre usa los proveedores ya registrados.
+     */
+    'jsonpe' => [
+        'token'    => env('JSONPE_TOKEN'),
+        'base_url' => env('JSONPE_URL', 'https://api.json.pe/api'),
+    ],
+
     'apiperu' => [
         'token'    => env('APIPERU_TOKEN'),
         'base_url' => env('APIPERU_URL', 'https://api.apis.net.pe/v2'),

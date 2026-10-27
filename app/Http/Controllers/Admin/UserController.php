@@ -34,7 +34,7 @@ class UserController extends Controller
     public function create()
     {
         return view('usuarios.create', [
-            'usuario' => new User(['estado' => 'activo', 'area' => 'Contabilidad']),
+            'usuario' => new User(['estado' => 'activo', 'area' => 'Administración']),
             'roles'   => $this->rolesAsignables(),
         ]);
     }
@@ -46,8 +46,7 @@ class UserController extends Controller
         $usuario = User::create($data);
         $usuario->syncRoles($request->roles);
 
-        return redirect()->route('admin.usuarios.show', $usuario)
-            ->with('success', "Se creó la cuenta de {$usuario->nombre_completo}.");
+        return $this->exito("Se creó la cuenta de {$usuario->nombre_completo}.", route('admin.usuarios.show', $usuario));
     }
 
     public function show(User $usuario)
@@ -86,33 +85,31 @@ class UserController extends Controller
             $usuario->syncRoles($request->roles);
         }
 
-        return redirect()->route('admin.usuarios.show', $usuario)
-            ->with('success', 'Los datos del usuario fueron actualizados.');
+        return $this->exito('Los datos del usuario fueron actualizados.', route('admin.usuarios.show', $usuario));
     }
 
     public function destroy(User $usuario)
     {
         if ($usuario->is(auth()->user())) {
-            return back()->with('error', 'No puede eliminar su propia cuenta.');
+            return $this->aviso('No puede eliminar su propia cuenta.');
         }
         $this->verificarJerarquia($usuario);
 
         $usuario->delete();
 
-        return redirect()->route('admin.usuarios.index')
-            ->with('success', "Se eliminó la cuenta de {$usuario->nombre_completo}.");
+        return $this->exito("Se eliminó la cuenta de {$usuario->nombre_completo}.", route('admin.usuarios.index'), true);
     }
 
     public function toggleEstado(User $usuario)
     {
         if ($usuario->is(auth()->user())) {
-            return back()->with('error', 'No puede cambiar el estado de su propia cuenta.');
+            return $this->aviso('No puede cambiar el estado de su propia cuenta.');
         }
         $this->verificarJerarquia($usuario);
 
         $usuario->update(['estado' => $usuario->estado === 'activo' ? 'inactivo' : 'activo']);
 
-        return back()->with('success', "La cuenta de {$usuario->nombre_completo} quedó " . mb_strtolower($usuario->estado_label) . '.');
+        return $this->exito("La cuenta de {$usuario->nombre_completo} quedó " . mb_strtolower($usuario->estado_label) . '.', url()->previous());
     }
 
     public function permisos(User $usuario)
@@ -128,7 +125,7 @@ class UserController extends Controller
         $this->verificarJerarquia($usuario);
 
         if ($usuario->is(auth()->user())) {
-            return back()->with('error', 'No puede modificar sus propios roles.');
+            return $this->aviso('No puede modificar sus propios roles.');
         }
 
         $request->validate(
@@ -138,8 +135,7 @@ class UserController extends Controller
 
         $usuario->syncRoles($request->roles);
 
-        return redirect()->route('admin.usuarios.show', $usuario)
-            ->with('success', 'Los roles del usuario fueron actualizados.');
+        return $this->exito('Los roles del usuario fueron actualizados.', route('admin.usuarios.show', $usuario));
     }
 
     /** Solo un superadministrador puede gestionar cuentas de superadministrador. */

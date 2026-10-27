@@ -3,7 +3,7 @@
     $f = fn ($campo) => $registro->{$campo} instanceof \Carbon\CarbonInterface ? $registro->{$campo}->format('Y-m-d') : $registro->{$campo};
 @endphp
 
-<x-seccion numero="1" titulo="Proveedor y contrato" ayuda="Ingrese el RUC y presione «Consultar» para completar la razón social desde SUNAT.">
+<x-seccion numero="1" titulo="Proveedor y contrato" ayuda="Escriba el RUC y la razón social se completará sola. Si no conoce el RUC, escriba el nombre del proveedor y elija de la lista.">
     <div class="row g-3">
         <div class="col-md-4 col-lg-3">
             <x-label for="proveedor_ruc">RUC del proveedor</x-label>
@@ -12,9 +12,9 @@
                        class="form-control @error('proveedor_ruc') is-invalid @enderror"
                        value="{{ old('proveedor_ruc', $registro->proveedor_ruc) }}" placeholder="20XXXXXXXXX">
                 <button type="button" class="btn btn-outline-primary"
-                        data-ruc-url="{{ route('servicios.ruc', '__RUC__') }}" data-ruc-input="#proveedor_ruc"
+                        data-ruc-url="{{ route('servicios.ruc', '__RUC__') }}" data-ruc-buscar="{{ route('servicios.ruc-buscar') }}" data-ruc-input="#proveedor_ruc"
                         data-ruc-razon="#proveedor_razon_social" data-ruc-nombre="#proveedor_nombre" data-ruc-estado="#proveedor_ruc_estado">
-                    <i class="bi bi-search me-1" aria-hidden="true"></i>Consultar
+                    <i class="bi bi-search me-1" aria-hidden="true"></i>Buscar
                 </button>
             </div>
             <div id="proveedor_ruc_estado" class="form-text"></div>

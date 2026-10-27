@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(request()->header('X-Modal') ? 'layouts.modal' : 'layouts.app')
 @section('title', 'Editar mantenimiento')
 @section('page-title', 'Editar mantenimiento')
 @section('page-subtitle', ($mantenimiento->vehiculo?->placa ?? '') . ' · Programado para el ' . $mantenimiento->fecha_programada->format('d/m/Y'))

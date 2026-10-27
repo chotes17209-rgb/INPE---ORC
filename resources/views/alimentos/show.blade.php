@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(request()->header('X-Modal') ? 'layouts.modal' : 'layouts.app')
 @section('title', 'Registro ' . $registro->numero_registro)
 @section('page-title', 'Registro ' . $registro->numero_registro)
 @section('page-subtitle', $registro->proveedor_razon_social . ' · ' . $registro->penal_label)
@@ -11,7 +11,7 @@
     <a href="{{ route('alimentos.registros.comprobante-pdf', $registro) }}" class="btn btn-outline-primary"><i class="bi bi-file-earmark-pdf me-1" aria-hidden="true"></i>Ficha PDF</a>
     @if($registro->es_editable)
         @can('registrar')
-            <a href="{{ route('alimentos.registros.edit', $registro) }}" class="btn btn-outline-primary"><i class="bi bi-pencil me-1" aria-hidden="true"></i>Editar</a>
+            <a href="{{ route('alimentos.registros.edit', $registro) }}" data-modal class="btn btn-outline-primary"><i class="bi bi-pencil me-1" aria-hidden="true"></i>Editar</a>
         @endcan
     @endif
     @if($registro->puede_pagarse)
@@ -147,8 +147,4 @@
         @endif
     </div>
 </div>
-
-@can('aprobar')
-    @include('partials.modal-pago')
-@endcan
 @endsection

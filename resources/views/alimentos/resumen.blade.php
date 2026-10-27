@@ -1,7 +1,8 @@
 @extends('layouts.app')
 @section('title', 'Resumen mensual de alimentos')
-@section('page-title', 'Resumen mensual de alimentos')
-@section('page-subtitle', 'Importes registrados por mes de emisión del comprobante — ejercicio ' . $anio . '.')
+@section('page-title', 'Suministro de alimentos')
+@section('page-subtitle', 'Resumen mensual: importes por mes de emisión del comprobante — ejercicio ' . $anio . '.')
+@section('pestanas')@include('partials.pestanas', ['modulo' => 'alimentos'])@endsection
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('alimentos.registros.index') }}">Suministro de alimentos</a></li>
     <li class="breadcrumb-item active" aria-current="page">Resumen mensual</li>

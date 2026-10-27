@@ -1,11 +1,12 @@
 @extends('layouts.app')
 @section('title', 'Ejecución del gasto')
-@section('page-title', 'Ejecución del gasto')
-@section('page-subtitle', 'Obligaciones registradas frente a pagos efectuados, por módulo — ejercicio ' . $anio . '.')
+@section('page-title', 'Reportes')
+@section('page-subtitle', 'Ejecución del gasto: obligaciones registradas frente a pagos efectuados, por módulo — ejercicio ' . $anio . '.')
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('reportes.index', ['anio' => $anio]) }}">Reportes</a></li>
     <li class="breadcrumb-item active" aria-current="page">Ejecución del gasto</li>
 @endsection
+@section('pestanas')@include('partials.pestanas', ['modulo' => 'reportes'])@endsection
 @section('page-actions')
     <form method="GET" class="d-flex gap-2 align-items-center">
         <label for="b_anio" class="small text-muted text-nowrap">Ejercicio</label>
@@ -97,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
         type: 'line',
         data: {
             labels: mensual.map(m => m.mes.substring(0, 3)),
-            datasets: [{ label: 'Pagado', data: mensual.map(m => m.pagado), borderColor: '#12355b', backgroundColor: 'rgba(18,53,91,.08)', fill: true, tension: .3, pointRadius: 3 }]
+            datasets: [{ label: 'Pagado', data: mensual.map(m => m.pagado), borderColor: '#1F1F1F', backgroundColor: 'rgba(224, 174, 11,.08)', fill: true, tension: .3, pointRadius: 3 }]
         },
         options: {
             plugins: { legend: { display: false } },

@@ -4,11 +4,11 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AI\AsistenteIAController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Contabilidad\AlimentoController;
-use App\Http\Controllers\Contabilidad\OperacionReciprocaController;
-use App\Http\Controllers\Contabilidad\ParqueAutomotorController;
-use App\Http\Controllers\Contabilidad\ReporteController;
-use App\Http\Controllers\Contabilidad\VehiculoMantenimientoController;
+use App\Http\Controllers\Administrativo\AlimentoController;
+use App\Http\Controllers\Administrativo\OperacionReciprocaController;
+use App\Http\Controllers\Administrativo\ParqueAutomotorController;
+use App\Http\Controllers\Administrativo\ReporteController;
+use App\Http\Controllers\Administrativo\VehiculoMantenimientoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\Servicios\ConsultaRucController;
@@ -43,6 +43,7 @@ Route::middleware(['auth', 'active.user'])->group(function () {
 
     /* ── Servicios auxiliares ── */
     Route::get('/servicios/ruc/{ruc}', ConsultaRucController::class)->name('servicios.ruc')->middleware('throttle:30,1');
+    Route::get('/servicios/ruc-buscar', [ConsultaRucController::class, 'buscar'])->name('servicios.ruc-buscar')->middleware('throttle:60,1');
     Route::get('/notificaciones/{notificacion}', [NotificacionController::class, 'abrir'])->name('notificaciones.abrir');
     Route::post('/notificaciones/marcar-todas', [NotificacionController::class, 'marcarTodas'])->name('notificaciones.marcar-todas');
 

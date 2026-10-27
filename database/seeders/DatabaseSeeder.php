@@ -29,14 +29,14 @@ class DatabaseSeeder extends Seeder
 
         $contador = User::firstOrCreate(['email' => 'contador@inpe-orc.gob.pe'], [
             'name' => 'María', 'apellidos' => 'García López', 'dni' => '45678901',
-            'cargo' => 'Contador Público', 'area' => 'Contabilidad',
+            'cargo' => 'Contador Público', 'area' => 'Administración',
             'estado' => 'activo', 'password' => Hash::make('Contador2024*'),
         ]);
         $contador->assignRole('contador');
 
         $asistente = User::firstOrCreate(['email' => 'asistente@inpe-orc.gob.pe'], [
             'name' => 'Carlos', 'apellidos' => 'Quispe Mamani', 'dni' => '72345678',
-            'cargo' => 'Técnico Administrativo', 'area' => 'Contabilidad',
+            'cargo' => 'Técnico Administrativo', 'area' => 'Administración',
             'estado' => 'activo', 'password' => Hash::make('Asistente2024*'),
         ]);
         $asistente->assignRole('asistente');

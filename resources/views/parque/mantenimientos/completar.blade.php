@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(request()->header('X-Modal') ? 'layouts.modal' : 'layouts.app')
 @section('title', 'Registrar conformidad del mantenimiento')
 @section('page-title', 'Registrar conformidad del mantenimiento')
 @section('page-subtitle', 'Registre la ejecución del servicio y su costo real. El vehículo volverá a estar operativo.')
@@ -28,9 +28,7 @@
     </div>
 
     <div class="col-lg-8 order-lg-1">
-        <form method="POST" action="{{ route('parque.mantenimientos.marcar-completo', $mantenimiento) }}" class="card"
-              data-confirm="Se registrará la conformidad del mantenimiento y el vehículo {{ $mantenimiento->vehiculo->placa }} volverá a estar operativo. Después no podrá modificarse."
-              data-confirm-title="Confirmar conformidad" data-confirm-btn="Registrar conformidad" data-confirm-variant="success">
+        <form method="POST" action="{{ route('parque.mantenimientos.marcar-completo', $mantenimiento) }}" class="card">
             @csrf
             <div class="card-body pb-0">
                 <x-seccion numero="1" titulo="Ejecución del servicio">

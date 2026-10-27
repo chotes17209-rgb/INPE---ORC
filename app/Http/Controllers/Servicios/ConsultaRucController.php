@@ -3,60 +3,59 @@
 namespace App\Http\Controllers\Servicios;
 
 use App\Http\Controllers\Controller;
+use App\Support\ConsultaSunat;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
 /**
- * Consulta de datos de un contribuyente (SUNAT) a través de apis.net.pe.
- * La consulta se hace desde el servidor para no exponer el token en el navegador.
+ * Consulta de contribuyentes (SUNAT) desde los formularios.
+ * Se hace desde el servidor para no exponer los tokens en el navegador.
  */
 class ConsultaRucController extends Controller
 {
+    public function __construct(private readonly ConsultaSunat $sunat)
+    {
+    }
+
+    /** RUC → razón social. */
     public function __invoke(string $ruc): JsonResponse
     {
         if (! preg_match('/^(10|15|16|17|20)\d{9}$/', $ruc)) {
-            return response()->json(['encontrado' => false, 'mensaje' => 'El RUC debe tener 11 dígitos válidos.'], 422);
+            return response()->json(['encontrado' => false, 'mensaje' => 'El RUC debe tener 11 dígitos y empezar con 10, 15, 16, 17 o 20.'], 422);
         }
 
-        if (blank(config('services.apiperu.token'))) {
-            return response()->json(['encontrado' => false, 'mensaje' => 'La consulta de RUC no está configurada (APIPERU_TOKEN).'], 503);
+        $datos = $this->sunat->porRuc($ruc);
+
+        if (! $datos) {
+            return response()->json([
+                'encontrado' => false,
+                'mensaje'    => $this->sunat->hayServicioExterno()
+                    ? 'No se encontró el RUC en SUNAT. Verifique el número o escriba los datos manualmente.'
+                    : 'El RUC no figura entre los proveedores registrados. Escriba los datos manualmente.',
+            ], 404);
         }
 
-        try {
-            $datos = Cache::remember("ruc:{$ruc}", now()->addDay(), function () use ($ruc) {
-                $response = Http::withToken(config('services.apiperu.token'))
-                    ->acceptJson()
-                    ->timeout(10)
-                    ->get(rtrim(config('services.apiperu.base_url'), '/') . '/sunat/ruc', ['numero' => $ruc]);
+        return response()->json(['encontrado' => true, ...$datos]);
+    }
 
-                return $response->successful() ? $response->json() : null;
-            });
-        } catch (\Throwable $e) {
-            Log::warning("Consulta RUC {$ruc}: " . $e->getMessage());
+    /** Razón social → RUC (lista de coincidencias). */
+    public function buscar(Request $request): JsonResponse
+    {
+        $q = trim((string) $request->query('q'));
 
-            return response()->json(['encontrado' => false, 'mensaje' => 'No fue posible conectar con el servicio de SUNAT.'], 502);
+        if (mb_strlen($q) < 3) {
+            return response()->json(['resultados' => [], 'mensaje' => 'Escriba al menos 3 letras.']);
         }
 
-        if (empty($datos['razonSocial'] ?? $datos['nombre'] ?? null)) {
-            Cache::forget("ruc:{$ruc}");
-
-            return response()->json(['encontrado' => false, 'mensaje' => 'No se encontró el RUC consultado.'], 404);
-        }
-
-        $direccion = collect([$datos['direccion'] ?? null, $datos['distrito'] ?? null, $datos['provincia'] ?? null, $datos['departamento'] ?? null])
-            ->filter(fn ($v) => filled($v) && $v !== '-')
-            ->implode(', ');
+        $resultados = $this->sunat->porNombre(mb_substr($q, 0, 120));
 
         return response()->json([
-            'encontrado'       => true,
-            'ruc'              => $ruc,
-            'razon_social'     => $datos['razonSocial'] ?? $datos['nombre'],
-            'nombre_comercial' => $datos['nombreComercial'] ?? null,
-            'estado'           => $datos['estado'] ?? null,
-            'condicion'        => $datos['condicion'] ?? null,
-            'direccion'        => $direccion ?: null,
+            'resultados' => $resultados,
+            'mensaje'    => $resultados->isEmpty()
+                ? ($this->sunat->buscaNombresEnSunat()
+                    ? 'Sin coincidencias en SUNAT. Puede escribir los datos manualmente.'
+                    : 'Sin coincidencias entre los proveedores registrados. Escriba el RUC para consultarlo en SUNAT.')
+                : null,
         ]);
     }
 }

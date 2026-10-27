@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(request()->header('X-Modal') ? 'layouts.modal' : 'layouts.app')
 @section('title', 'Editar vehículo ' . $vehiculo->placa)
 @section('page-title', 'Editar vehículo')
 @section('page-subtitle', $vehiculo->placa . ' · ' . $vehiculo->descripcion)

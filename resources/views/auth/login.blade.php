@@ -11,14 +11,15 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="{{ asset('css/erp-inpe.css') }}?v={{ config('inpe.version') }}" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
 </head>
 <body>
 <div class="login-page">
     <section class="login-aside" aria-label="Presentación del sistema">
         <div class="d-flex align-items-center gap-3">
-            <span class="brand-mark" aria-hidden="true">{{ config('inpe.siglas') }}</span>
+            <img src="{{ asset('img/inpe-escudo.png') }}" alt="" class="login-escudo" width="92" height="102">
             <div>
-                <div class="small text-uppercase" style="letter-spacing:.08em;color:#9fb0c6">{{ config('inpe.sector') }}</div>
+                <div class="small text-uppercase" style="letter-spacing:.08em;color:#D9C27A">{{ config('inpe.sector') }}</div>
                 <div class="fw-semibold text-white">{{ config('inpe.institucion') }}</div>
             </div>
         </div>
@@ -34,18 +35,15 @@
             </ul>
         </div>
 
-        <div class="small" style="color:#9fb0c6">
+        <div class="small" style="color:#B5AE9C">
             Uso exclusivo del personal autorizado. Las acciones realizadas en el sistema quedan registradas.
         </div>
     </section>
 
     <section class="login-form-wrap">
         <div class="login-form">
-            <div class="d-lg-none text-center mb-4">
-                <span class="brand-mark mx-auto mb-2" aria-hidden="true">{{ config('inpe.siglas') }}</span>
-                <div class="fw-semibold">{{ config('inpe.institucion') }}</div>
-                <div class="small text-muted">{{ config('inpe.oficina') }}</div>
-            </div>
+            <img src="{{ asset('img/inpe-logo.png') }}" alt="{{ config('inpe.institucion') }} — INPE" class="login-logo" width="454" height="145">
+            <p class="text-center text-muted mb-4">{{ config('inpe.oficina') }} · {{ config('inpe.area') }}</p>
 
             <h2 class="mb-1">Iniciar sesión</h2>
             <p class="text-muted mb-4">Ingrese con su cuenta institucional.</p>
@@ -82,9 +80,9 @@
                 </div>
                 <div class="form-check mb-4">
                     <input class="form-check-input" type="checkbox" name="remember" id="remember" value="1" {{ old('remember') ? 'checked' : '' }}>
-                    <label class="form-check-label small" for="remember">Mantener la sesión iniciada en este equipo</label>
+                    <label class="form-check-label" for="remember">Mantener la sesión iniciada en este equipo</label>
                 </div>
-                <button type="submit" class="btn btn-primary w-100 py-2" data-texto-envio="Verificando…">
+                <button type="submit" class="btn btn-primary btn-lg w-100" data-texto-envio="Verificando…">
                     <i class="bi bi-box-arrow-in-right me-2" aria-hidden="true"></i>Ingresar
                 </button>
             </form>

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(request()->header('X-Modal') ? 'layouts.modal' : 'layouts.app')
 @section('title', 'Editar ' . $registro->numero_registro)
 @section('page-title', 'Editar registro de alimentos')
 @section('page-subtitle', 'Registro ' . $registro->numero_registro . ' · ' . $registro->proveedor_razon_social)

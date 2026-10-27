@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Contabilidad;
+namespace App\Http\Controllers\Administrativo;
 
 use App\Http\Controllers\Controller;
 use App\Support\DocumentoPdf;
@@ -57,8 +57,7 @@ class ParqueAutomotorController extends Controller
 
         $vehiculo = Vehiculo::create($data);
 
-        return redirect()->route('parque.vehiculos.show', $vehiculo)
-            ->with('success', "Se registró el vehículo de placa {$vehiculo->placa}.");
+        return $this->exito("Se registró el vehículo de placa {$vehiculo->placa}.", route('parque.vehiculos.show', $vehiculo));
     }
 
     public function show(Vehiculo $vehiculo)
@@ -102,20 +101,18 @@ class ParqueAutomotorController extends Controller
 
         $vehiculo->update($data);
 
-        return redirect()->route('parque.vehiculos.show', $vehiculo)
-            ->with('success', 'Los datos del vehículo fueron actualizados.');
+        return $this->exito('Los datos del vehículo fueron actualizados.', route('parque.vehiculos.show', $vehiculo));
     }
 
     public function destroy(Vehiculo $vehiculo)
     {
         if ($vehiculo->mantenimientosPendientes()->exists()) {
-            return back()->with('error', 'No se puede eliminar un vehículo con mantenimientos programados o en proceso.');
+            return $this->aviso('No se puede eliminar un vehículo con mantenimientos programados o en proceso.');
         }
 
         $vehiculo->delete();
 
-        return redirect()->route('parque.vehiculos.index')
-            ->with('success', "Se eliminó el vehículo de placa {$vehiculo->placa}.");
+        return $this->exito("Se eliminó el vehículo de placa {$vehiculo->placa}.", route('parque.vehiculos.index'), true);
     }
 
     public function cambiarEstado(Request $request, Vehiculo $vehiculo)
@@ -124,7 +121,7 @@ class ParqueAutomotorController extends Controller
 
         $vehiculo->update(['estado' => $request->estado]);
 
-        return back()->with('success', "El vehículo {$vehiculo->placa} quedó en estado «{$vehiculo->estado_label}».");
+        return $this->exito("El vehículo {$vehiculo->placa} quedó en estado «{$vehiculo->estado_label}».", url()->previous());
     }
 
     public function historial(Vehiculo $vehiculo)

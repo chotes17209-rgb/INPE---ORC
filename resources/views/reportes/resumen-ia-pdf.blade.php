@@ -1,10 +1,10 @@
 @extends('reportes.layouts.pdf')
-@section('titulo', 'Resumen ejecutivo de la gestión contable')
+@section('titulo', 'Resumen ejecutivo de la gestión administrativa')
 @section('subtitulo', 'Documento elaborado con apoyo de inteligencia artificial sobre los registros del sistema al ' . now()->format('d/m/Y'))
 @section('codigo', 'RES-IA-' . now()->format('Ymd'))
 @section('estilos')
     .contenido { font-size: 9px; line-height: 1.6; margin-top: 8px; }
-    .contenido h3 { font-size: 9.6px; color: #12355b; text-transform: uppercase; margin: 12px 0 3px; border-bottom: .6px solid #9aa6b5; padding-bottom: 2px; }
+    .contenido h3 { font-size: 9.6px; color: #141414; text-transform: uppercase; margin: 12px 0 3px; border-bottom: .6px solid #9aa6b5; padding-bottom: 2px; }
     .contenido p { margin: 0 0 4px; }
     .contenido ul { margin: 2px 0 6px 14px; padding: 0; }
 @endsection

@@ -60,7 +60,7 @@
     </tr>
     <tr>
         <td colspan="2"><span class="et">Otros cargos</span><span class="va">S/ {{ number_format($registro->otros, 2) }}</span></td>
-        <td colspan="2" style="background:#e8eef6"><span class="et">Importe total</span><span class="va" style="font-size:12px;color:#12355b">S/ {{ number_format($registro->total, 2) }}</span></td>
+        <td colspan="2" style="background:#fdf3d0"><span class="et">Importe total</span><span class="va" style="font-size:12px;color:#141414">S/ {{ number_format($registro->total, 2) }}</span></td>
     </tr>
 </table>
 

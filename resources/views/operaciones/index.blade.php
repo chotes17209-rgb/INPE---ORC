@@ -5,11 +5,11 @@
 @section('breadcrumb')<li class="breadcrumb-item active" aria-current="page">Operaciones recíprocas</li>@endsection
 
 @section('page-actions')
-    <a href="{{ route('operaciones.resumen-mensual') }}" class="btn btn-outline-primary"><i class="bi bi-calendar3 me-1" aria-hidden="true"></i>Resumen mensual</a>
     @can('registrar')
-        <a href="{{ route('operaciones.registros.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Nueva operación</a>
+        <a href="{{ route('operaciones.registros.create') }}" class="btn btn-primary btn-lg" data-modal><i class="bi bi-plus-circle me-2" aria-hidden="true"></i>Nueva operación</a>
     @endcan
 @endsection
+@section('pestanas')@include('partials.pestanas', ['modulo' => 'operaciones'])@endsection
 
 @section('content')
 @php $filtrado = request()->anyFilled(['buscar', 'tipo_servicio', 'estado', 'mes', 'anio']); @endphp
@@ -96,31 +96,24 @@
                     <th scope="col">N° operación</th>
                     <th scope="col">Servicio</th>
                     <th scope="col">Entidad proveedora</th>
-                    <th scope="col">Comprobante</th>
-                    <th scope="col">Periodo</th>
                     <th scope="col">Vencimiento</th>
                     <th scope="col" class="text-end">Importe</th>
                     <th scope="col">Estado</th>
-                    <th scope="col" class="text-end"><span class="visually-hidden">Acciones</span></th>
+                    <th scope="col" class="text-end">Acciones</th>
                 </tr>
             </thead>
             <tbody>
             @forelse($operaciones as $op)
                 <tr class="{{ $op->estado === 'vencido' ? 'row-alert' : '' }}">
-                    <td><a href="{{ route('operaciones.registros.show', $op) }}" class="codigo">{{ $op->numero_operacion }}</a></td>
+                    <td><a href="{{ route('operaciones.registros.show', $op) }}" class="codigo" data-modal>{{ $op->numero_operacion }}</a></td>
                     <td>
                         <span class="cell-main">{{ $op->tipo_servicio_label }}</span>
-                        <span class="cell-sub">{{ $op->grupo_servicio }}</span>
+                        <span class="cell-sub">{{ $op->periodo }}</span>
                     </td>
-                    <td>
-                        <span class="cell-main">{{ Str::limit($op->entidad_proveedora, 34) }}</span>
+                    <td class="cell-proveedor">
+                        <span class="cell-main">{{ Str::limit($op->entidad_proveedora, 40) }}</span>
                         <span class="cell-sub">RUC {{ $op->ruc_entidad ?? '—' }}</span>
                     </td>
-                    <td class="text-nowrap">
-                        {{ $op->comprobante ?? '—' }}
-                        <span class="cell-sub">Emitido {{ $op->fecha_emision->format('d/m/Y') }}</span>
-                    </td>
-                    <td class="text-nowrap">{{ $op->periodo }}</td>
                     <td class="text-nowrap">
                         <span class="{{ $op->esta_vencida ? 'text-danger fw-semibold' : '' }}">{{ $op->fecha_vencimiento->format('d/m/Y') }}</span>
                         @if($op->estado !== 'pagado' && ! $op->esta_vencida)
@@ -131,19 +124,23 @@
                     <td><x-estado :color="$op->estado_badge">{{ $op->estado_label }}</x-estado></td>
                     <td>
                         <div class="table-actions">
-                            <a href="{{ route('operaciones.registros.show', $op) }}" class="btn btn-sm btn-light btn-icon" title="Ver detalle" aria-label="Ver detalle de {{ $op->numero_operacion }}"><i class="bi bi-eye" aria-hidden="true"></i></a>
+                            <x-accion tipo="ver" :href="route('operaciones.registros.show', $op)" :nombre="$op->numero_operacion" />
                             @if($op->es_editable)
                                 @can('registrar')
-                                    <a href="{{ route('operaciones.registros.edit', $op) }}" class="btn btn-sm btn-light btn-icon" title="Editar" aria-label="Editar {{ $op->numero_operacion }}"><i class="bi bi-pencil" aria-hidden="true"></i></a>
+                                    <x-accion tipo="editar" :href="route('operaciones.registros.edit', $op)" :nombre="$op->numero_operacion" />
                                 @endcan
                             @endif
                             @if($op->puede_pagarse)
                                 @can('aprobar')
-                                    <button type="button" class="btn btn-sm btn-outline-success btn-icon" title="Registrar pago" aria-label="Registrar pago de {{ $op->numero_operacion }}"
-                                            data-pago-url="{{ route('operaciones.registros.aprobar', $op) }}" data-pago-codigo="{{ $op->numero_operacion }}"
-                                            data-pago-detalle="{{ $op->entidad_proveedora }} — {{ $op->tipo_servicio_label }}" data-pago-total="{{ $op->total }}">
-                                        <i class="bi bi-cash-coin" aria-hidden="true"></i>
-                                    </button>
+                                    <x-accion tipo="pagar" :nombre="$op->numero_operacion"
+                                              data-pago-url="{{ route('operaciones.registros.aprobar', $op) }}" data-pago-codigo="{{ $op->numero_operacion }}"
+                                              data-pago-detalle="{{ $op->entidad_proveedora }} — {{ $op->tipo_servicio_label }}" data-pago-total="{{ $op->total }}" />
+                                @endcan
+                            @endif
+                            @if($op->es_editable)
+                                @can('aprobar')
+                                    <x-accion tipo="eliminar" :href="route('operaciones.registros.destroy', $op)" :nombre="$op->numero_operacion"
+                                              confirmar="Se eliminará la operación {{ $op->numero_operacion }} ({{ $op->entidad_proveedora }}). Esta acción quedará registrada en la auditoría." />
                                 @endcan
                             @endif
                         </div>
@@ -151,11 +148,11 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="9">
+                    <td colspan="7">
                         <x-vacio icono="receipt" titulo="No se encontraron operaciones"
                                  :texto="$filtrado ? 'Pruebe con otros criterios de búsqueda.' : 'Aún no se ha registrado ninguna operación recíproca.'">
                             @can('registrar')
-                                <a href="{{ route('operaciones.registros.create') }}" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Registrar operación</a>
+                                <a href="{{ route('operaciones.registros.create') }}" class="btn btn-primary" data-modal><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Registrar operación</a>
                             @endcan
                         </x-vacio>
                     </td>
@@ -165,7 +162,7 @@
             @if($operaciones->count())
             <tfoot>
                 <tr>
-                    <td colspan="6" class="text-end">Subtotal de la página</td>
+                    <td colspan="4" class="text-end">Subtotal de la página</td>
                     <td class="text-end money">S/ {{ number_format($operaciones->sum('total'), 2) }}</td>
                     <td colspan="2"></td>
                 </tr>
@@ -177,8 +174,4 @@
         <div class="paginacion">{{ $operaciones->links() }}</div>
     @endif
 </div>
-
-@can('aprobar')
-    @include('partials.modal-pago')
-@endcan
 @endsection

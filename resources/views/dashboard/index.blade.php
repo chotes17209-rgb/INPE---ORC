@@ -1,27 +1,36 @@
 @extends('layouts.app')
-@section('title', 'Panel de control')
-@section('page-title', 'Panel de control')
-@section('page-subtitle', 'Resumen de la gestión contable del ejercicio ' . $anio . ' — ' . config('inpe.oficina'))
-@section('breadcrumb')<li class="breadcrumb-item active" aria-current="page">Panel de control</li>@endsection
-
-@section('page-actions')
-    <a href="{{ route('reportes.index') }}" class="btn btn-outline-primary"><i class="bi bi-bar-chart-line me-1" aria-hidden="true"></i>Ver reportes</a>
-    @can('registrar')
-    <div class="dropdown">
-        <button class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Nuevo registro
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="{{ route('operaciones.registros.create') }}"><i class="bi bi-receipt me-2" aria-hidden="true"></i>Operación recíproca</a></li>
-            <li><a class="dropdown-item" href="{{ route('alimentos.registros.create') }}"><i class="bi bi-basket3 me-2" aria-hidden="true"></i>Suministro de alimentos</a></li>
-            <li><a class="dropdown-item" href="{{ route('parque.mantenimientos.create') }}"><i class="bi bi-tools me-2" aria-hidden="true"></i>Mantenimiento vehicular</a></li>
-            <li><a class="dropdown-item" href="{{ route('parque.vehiculos.create') }}"><i class="bi bi-truck-front me-2" aria-hidden="true"></i>Vehículo</a></li>
-        </ul>
-    </div>
-    @endcan
-@endsection
+@section('title', 'Inicio')
+@section('page-title', 'Bienvenido(a), ' . auth()->user()->name)
+@section('page-subtitle', 'Resumen de la gestión administrativa del ejercicio ' . $anio . ' — ' . config('inpe.oficina'))
 
 @section('content')
+
+{{-- ── Accesos rápidos: lo que más se usa, con botones grandes ── --}}
+@php
+    $accesos = auth()->user()->can('registrar') ? [
+        ['alimentos.registros.create', 'basket3', 'Registrar alimentos', 'Comprobante de suministro', true],
+        ['operaciones.registros.create', 'receipt', 'Registrar operación', 'Luz, agua, teléfono, contratos', true],
+        ['parque.mantenimientos.create', 'tools', 'Programar mantenimiento', 'Servicio a un vehículo', true],
+        ['reportes.index', 'bar-chart-line', 'Ver reportes', 'PDF y Excel del ejercicio', false],
+    ] : [
+        ['alimentos.registros.index', 'basket3', 'Suministro de alimentos', 'Consultar registros', false],
+        ['operaciones.registros.index', 'receipt', 'Operaciones recíprocas', 'Consultar registros', false],
+        ['parque.vehiculos.index', 'truck-front', 'Parque automotor', 'Vehículos y mantenimientos', false],
+        ['reportes.index', 'bar-chart-line', 'Ver reportes', 'PDF y Excel del ejercicio', false],
+    ];
+@endphp
+<h2 class="visually-hidden">Accesos rápidos</h2>
+<div class="accesos mb-4">
+    @foreach($accesos as [$ruta, $icono, $titulo, $detalle, $ventana])
+        <a href="{{ route($ruta) }}" class="acceso" @if($ventana) data-modal @endif>
+            <span class="acceso__icono" aria-hidden="true"><i class="bi bi-{{ $icono }}"></i></span>
+            <span>
+                <span class="acceso__titulo">{{ $titulo }}</span>
+                <span class="acceso__detalle">{{ $detalle }}</span>
+            </span>
+        </a>
+    @endforeach
+</div>
 
 {{-- ── Alertas que requieren atención ── --}}
 @php
@@ -80,9 +89,9 @@
             <div class="card-header">
                 <i class="bi bi-bar-chart card-header__icon" aria-hidden="true"></i> Gasto pagado por mes (últimos 6 meses)
                 <span class="card-header__aside d-none d-md-flex gap-3">
-                    <span class="leyenda" style="--c:#12355b">Mantenimiento</span>
-                    <span class="leyenda" style="--c:#b08a2e">Alimentos</span>
-                    <span class="leyenda" style="--c:#1f6391">Op. recíprocas</span>
+                    <span class="leyenda" style="--c:#1F1F1F">Mantenimiento</span>
+                    <span class="leyenda" style="--c:#E0AE0B">Alimentos</span>
+                    <span class="leyenda" style="--c:#0C9044">Op. recíprocas</span>
                 </span>
             </div>
             <div class="card-body d-flex flex-column"><div class="flex-grow-1" style="position:relative;min-height:300px"><canvas id="graficoGastos" aria-label="Gráfico de gasto mensual" role="img"></canvas></div></div>
@@ -166,7 +175,7 @@
                 @endforeach
                 @forelse($mantProximos as $m)
                     <a href="{{ route('parque.mantenimientos.show', $m) }}" class="list-row">
-                        <span class="list-row__icon bg-primary-subtle text-primary"><i class="bi bi-tools" aria-hidden="true"></i></span>
+                        <span class="list-row__icon bg-primary-subtle text-primary-emphasis"><i class="bi bi-tools" aria-hidden="true"></i></span>
                         <span class="list-row__main">
                             <span class="list-row__title d-block">{{ $m->vehiculo?->placa }} — {{ $m->descripcion }}</span>
                             <span class="list-row__sub">{{ $m->tipo_label }} · {{ $m->taller ?: 'Taller por definir' }}</span>
@@ -248,9 +257,9 @@ document.addEventListener('DOMContentLoaded', () => {
         data: {
             labels: datos.map(d => d.mes),
             datasets: [
-                { label: 'Mantenimiento',  data: datos.map(d => d.mantenimiento), backgroundColor: '#12355b', borderRadius: 3, maxBarThickness: 28 },
-                { label: 'Alimentos',      data: datos.map(d => d.alimentos),     backgroundColor: '#b08a2e', borderRadius: 3, maxBarThickness: 28 },
-                { label: 'Op. recíprocas', data: datos.map(d => d.servicios),     backgroundColor: '#1f6391', borderRadius: 3, maxBarThickness: 28 },
+                { label: 'Mantenimiento',  data: datos.map(d => d.mantenimiento), backgroundColor: '#1F1F1F', borderRadius: 3, maxBarThickness: 28 },
+                { label: 'Alimentos',      data: datos.map(d => d.alimentos),     backgroundColor: '#E0AE0B', borderRadius: 3, maxBarThickness: 28 },
+                { label: 'Op. recíprocas', data: datos.map(d => d.servicios),     backgroundColor: '#0C9044', borderRadius: 3, maxBarThickness: 28 },
             ]
         },
         options: {

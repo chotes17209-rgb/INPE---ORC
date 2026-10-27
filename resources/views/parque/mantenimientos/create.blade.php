@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(request()->header('X-Modal') ? 'layouts.modal' : 'layouts.app')
 @section('title', 'Programar mantenimiento')
 @section('page-title', 'Programar mantenimiento')
 @section('page-subtitle', 'Registre un mantenimiento preventivo, correctivo o de emergencia.')

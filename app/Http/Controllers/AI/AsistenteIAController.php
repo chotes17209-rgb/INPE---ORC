@@ -15,7 +15,7 @@ class AsistenteIAController extends Controller
 {
     public function __construct(private OpenAIService $ai) {}
 
-    private string $systemBase = "Eres el asistente institucional del Sistema Integrado de Gestión Contable del INPE - Oficina Regional Centro. "
+    private string $systemBase = "Eres el asistente institucional del Sistema Integrado de Gestión Administrativa del INPE - Oficina Regional Centro. "
         . "Responde siempre en español, con lenguaje formal y técnico propio de la administración pública peruana. "
         . "Las cifras monetarias se expresan en soles (S/). "
         . "Reglas: 1) Responde únicamente lo que se consulta. 2) Sé preciso y conciso. "
@@ -115,7 +115,7 @@ class AsistenteIAController extends Controller
     public function resumenEjecutivoPDF()
     {
         $contexto = $this->generarContextoSistema();
-        $prompt   = "Genera un resumen ejecutivo formal y conciso para el área de Contabilidad del INPE ORC con estas secciones:\n1. ESTADO GENERAL\n2. PARQUE AUTOMOTOR\n3. ALIMENTOS Y RACIONES\n4. OPERACIONES RECÍPROCAS\n5. ALERTAS CRÍTICAS\n6. RECOMENDACIONES\nUsa viñetas. Sé breve en cada sección.";
+        $prompt   = "Genera un resumen ejecutivo formal y conciso para el Área Administrativa del INPE ORC con estas secciones:\n1. ESTADO GENERAL\n2. PARQUE AUTOMOTOR\n3. ALIMENTOS Y RACIONES\n4. OPERACIONES RECÍPROCAS\n5. ALERTAS CRÍTICAS\n6. RECOMENDACIONES\nUsa viñetas. Sé breve en cada sección.";
         $contenidoIA = $this->ai->consultar($prompt, $this->systemBase . " La fecha de hoy es " . now()->format('d/m/Y') . ". DATOS DEL SISTEMA: $contexto.");
 
         return DocumentoPdf::descargar('reportes.resumen-ia-pdf', ['contenido' => $contenidoIA], 'resumen-ejecutivo-' . now()->format('Y-m-d') . '.pdf', 'portrait');

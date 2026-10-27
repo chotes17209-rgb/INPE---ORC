@@ -31,7 +31,7 @@
             @forelse($mantenimientos as $m)
                 <tr>
                     <td><x-estado :color="$m->tipo_badge">{{ $m->tipo_label }}</x-estado></td>
-                    <td><a href="{{ route('parque.mantenimientos.show', $m) }}">{{ Str::limit($m->descripcion, 60) }}</a></td>
+                    <td><a href="{{ route('parque.mantenimientos.show', $m) }}" data-modal>{{ Str::limit($m->descripcion, 60) }}</a></td>
                     <td>{{ $m->fecha_programada->format('d/m/Y') }}</td>
                     <td>{{ $m->fecha_realizado?->format('d/m/Y') ?? '—' }}</td>
                     <td class="text-end money">S/ {{ number_format($m->costo_estimado, 2) }}</td>

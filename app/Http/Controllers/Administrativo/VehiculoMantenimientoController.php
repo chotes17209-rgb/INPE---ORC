@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Contabilidad;
+namespace App\Http\Controllers\Administrativo;
 
 use App\Http\Controllers\Controller;
 use App\Support\DocumentoPdf;
@@ -61,8 +61,7 @@ class VehiculoMantenimientoController extends Controller
             return $mantenimiento;
         });
 
-        return redirect()->route('parque.mantenimientos.show', $mantenimiento)
-            ->with('success', "Se programó el mantenimiento del vehículo {$mantenimiento->vehiculo->placa}.");
+        return $this->exito("Se programó el mantenimiento del vehículo {$mantenimiento->vehiculo->placa}.", route('parque.mantenimientos.show', $mantenimiento));
     }
 
     public function show(VehiculoMantenimiento $mantenimiento)
@@ -75,8 +74,7 @@ class VehiculoMantenimientoController extends Controller
     public function edit(VehiculoMantenimiento $mantenimiento)
     {
         if (! $mantenimiento->esta_abierto) {
-            return redirect()->route('parque.mantenimientos.show', $mantenimiento)
-                ->with('info', 'Un mantenimiento completado o cancelado no puede modificarse.');
+            return $this->aviso('Un mantenimiento completado o cancelado no puede modificarse.', route('parque.mantenimientos.show', $mantenimiento), 'info');
         }
 
         return view('parque.mantenimientos.edit', [
@@ -88,21 +86,19 @@ class VehiculoMantenimientoController extends Controller
     public function update(MantenimientoRequest $request, VehiculoMantenimiento $mantenimiento)
     {
         if (! $mantenimiento->esta_abierto) {
-            return redirect()->route('parque.mantenimientos.show', $mantenimiento)
-                ->with('info', 'Un mantenimiento completado o cancelado no puede modificarse.');
+            return $this->aviso('Un mantenimiento completado o cancelado no puede modificarse.', route('parque.mantenimientos.show', $mantenimiento), 'info');
         }
 
         // El vehículo de un mantenimiento ya registrado no se cambia.
         $mantenimiento->update(collect($request->validated())->except('vehiculo_id')->all());
 
-        return redirect()->route('parque.mantenimientos.show', $mantenimiento)
-            ->with('success', 'Los cambios fueron guardados correctamente.');
+        return $this->exito('Los cambios fueron guardados correctamente.', route('parque.mantenimientos.show', $mantenimiento));
     }
 
     public function destroy(VehiculoMantenimiento $mantenimiento)
     {
         if ($mantenimiento->estado === 'completado') {
-            return back()->with('error', 'Un mantenimiento completado no puede eliminarse.');
+            return $this->aviso('Un mantenimiento completado no puede eliminarse.');
         }
 
         DB::transaction(function () use ($mantenimiento) {
@@ -110,15 +106,13 @@ class VehiculoMantenimientoController extends Controller
             $this->liberarVehiculo($mantenimiento->vehiculo);
         });
 
-        return redirect()->route('parque.mantenimientos.index')
-            ->with('success', 'Se eliminó el mantenimiento programado.');
+        return $this->exito('Se eliminó el mantenimiento programado.', route('parque.mantenimientos.index'), true);
     }
 
     public function completar(VehiculoMantenimiento $mantenimiento)
     {
         if (! $mantenimiento->esta_abierto) {
-            return redirect()->route('parque.mantenimientos.show', $mantenimiento)
-                ->with('info', 'Este mantenimiento ya fue cerrado.');
+            return $this->aviso('Este mantenimiento ya fue cerrado.', route('parque.mantenimientos.show', $mantenimiento), 'info');
         }
 
         $mantenimiento->load('vehiculo');
@@ -129,8 +123,7 @@ class VehiculoMantenimientoController extends Controller
     public function marcarCompleto(Request $request, VehiculoMantenimiento $mantenimiento)
     {
         if (! $mantenimiento->esta_abierto) {
-            return redirect()->route('parque.mantenimientos.show', $mantenimiento)
-                ->with('info', 'Este mantenimiento ya fue cerrado.');
+            return $this->aviso('Este mantenimiento ya fue cerrado.', route('parque.mantenimientos.show', $mantenimiento), 'info');
         }
 
         $kmMinimo = $mantenimiento->vehiculo->kilometraje_actual ?? 0;
@@ -168,8 +161,7 @@ class VehiculoMantenimientoController extends Controller
             $this->liberarVehiculo($vehiculo);
         });
 
-        return redirect()->route('parque.mantenimientos.show', $mantenimiento)
-            ->with('success', 'El mantenimiento fue registrado como completado.');
+        return $this->exito('El mantenimiento fue registrado como completado.', route('parque.mantenimientos.show', $mantenimiento));
     }
 
     public function reportePDF(Request $request)

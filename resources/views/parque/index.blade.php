@@ -1,15 +1,15 @@
 @extends('layouts.app')
 @section('title', 'Parque automotor')
 @section('page-title', 'Parque automotor')
-@section('page-subtitle', 'Inventario de la flota vehicular, documentación vigente y mantenimientos.')
+@section('page-subtitle', 'Vehículos de la flota: datos, documentación vigente y estado.')
 @section('breadcrumb')<li class="breadcrumb-item active" aria-current="page">Parque automotor</li>@endsection
 
 @section('page-actions')
-    <a href="{{ route('parque.mantenimientos.index') }}" class="btn btn-outline-primary"><i class="bi bi-tools me-1" aria-hidden="true"></i>Mantenimientos</a>
     @can('registrar')
-        <a href="{{ route('parque.vehiculos.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Registrar vehículo</a>
+        <a href="{{ route('parque.vehiculos.create') }}" class="btn btn-primary btn-lg" data-modal><i class="bi bi-plus-circle me-2" aria-hidden="true"></i>Nuevo vehículo</a>
     @endcan
 @endsection
+@section('pestanas')@include('partials.pestanas', ['modulo' => 'parque'])@endsection
 
 @section('content')
 @php $filtrado = request()->anyFilled(['buscar', 'estado', 'tipo', 'combustible']); @endphp
@@ -81,29 +81,26 @@
                 <tr>
                     <th scope="col">Placa</th>
                     <th scope="col">Vehículo</th>
-                    <th scope="col">Clase</th>
                     <th scope="col" class="text-end">Kilometraje</th>
-                    <th scope="col">SOAT</th>
-                    <th scope="col">Revisión técnica</th>
-                    <th scope="col">Responsable</th>
+                    <th scope="col">Documentos</th>
                     <th scope="col">Estado</th>
-                    <th scope="col" class="text-end"><span class="visually-hidden">Acciones</span></th>
+                    <th scope="col" class="text-end">Acciones</th>
                 </tr>
             </thead>
             <tbody>
             @forelse($vehiculos as $v)
                 @php $alerta = in_array('vencido', [$v->situacionDocumento('fecha_soat'), $v->situacionDocumento('fecha_revision_tecnica')]) && $v->estado !== 'baja'; @endphp
                 <tr class="{{ $alerta ? 'row-alert' : '' }}">
-                    <td><a href="{{ route('parque.vehiculos.show', $v) }}" class="codigo">{{ $v->placa }}</a></td>
+                    <td><a href="{{ route('parque.vehiculos.show', $v) }}" class="codigo" data-modal>{{ $v->placa }}</a></td>
                     <td>
                         <span class="cell-main">{{ $v->descripcion }}</span>
-                        <span class="cell-sub">{{ $v->anio_fabricacion }}{{ $v->color ? ' · ' . $v->color : '' }}</span>
+                        <span class="cell-sub">{{ $v->tipo_label }} · {{ $v->anio_fabricacion }}{{ $v->color ? ' · ' . $v->color : '' }}</span>
                     </td>
-                    <td><span class="etiqueta">{{ $v->tipo_label }}</span></td>
                     <td class="text-end money">{{ number_format($v->kilometraje_actual) }} km</td>
-                    <td class="text-nowrap">@include('parque.partials.doc', ['vehiculo' => $v, 'campo' => 'fecha_soat'])</td>
-                    <td class="text-nowrap">@include('parque.partials.doc', ['vehiculo' => $v, 'campo' => 'fecha_revision_tecnica'])</td>
-                    <td>{{ $v->responsable?->nombre_completo ?? '—' }}</td>
+                    <td class="text-nowrap">
+                        <span class="d-block"><span class="text-muted">SOAT:</span> @include('parque.partials.doc', ['vehiculo' => $v, 'campo' => 'fecha_soat'])</span>
+                        <span class="d-block mt-1"><span class="text-muted">Rev. técnica:</span> @include('parque.partials.doc', ['vehiculo' => $v, 'campo' => 'fecha_revision_tecnica'])</span>
+                    </td>
                     <td>
                         <x-estado :color="$v->estado_color">{{ $v->estado_label }}</x-estado>
                         @if($v->mantenimientos_abiertos_count)
@@ -112,23 +109,27 @@
                     </td>
                     <td>
                         <div class="table-actions">
-                            <a href="{{ route('parque.vehiculos.show', $v) }}" class="btn btn-sm btn-light btn-icon" title="Ver ficha" aria-label="Ver ficha de {{ $v->placa }}"><i class="bi bi-eye" aria-hidden="true"></i></a>
+                            <x-accion tipo="ver" :href="route('parque.vehiculos.show', $v)" :nombre="$v->placa" />
                             @can('registrar')
-                                <a href="{{ route('parque.vehiculos.edit', $v) }}" class="btn btn-sm btn-light btn-icon" title="Editar" aria-label="Editar {{ $v->placa }}"><i class="bi bi-pencil" aria-hidden="true"></i></a>
+                                <x-accion tipo="editar" :href="route('parque.vehiculos.edit', $v)" :nombre="$v->placa" />
                                 @if($v->estado !== 'baja')
-                                    <a href="{{ route('parque.mantenimientos.create', ['vehiculo_id' => $v->id]) }}" class="btn btn-sm btn-light btn-icon" title="Programar mantenimiento" aria-label="Programar mantenimiento de {{ $v->placa }}"><i class="bi bi-tools" aria-hidden="true"></i></a>
+                                    <x-accion tipo="mantenimiento" :href="route('parque.mantenimientos.create', ['vehiculo_id' => $v->id])" :nombre="$v->placa" />
                                 @endif
+                            @endcan
+                            @can('aprobar')
+                                <x-accion tipo="eliminar" :href="route('parque.vehiculos.destroy', $v)" :nombre="$v->placa"
+                                          confirmar="Se retirará el vehículo {{ $v->placa }} del inventario. Si fue dado de baja, se recomienda cambiar su estado en lugar de eliminarlo." />
                             @endcan
                         </div>
                     </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="9">
+                    <td colspan="6">
                         <x-vacio icono="truck-front" titulo="No se encontraron vehículos"
                                  :texto="$filtrado ? 'Pruebe con otros criterios de búsqueda.' : 'Aún no se ha registrado ningún vehículo.'">
                             @can('registrar')
-                                <a href="{{ route('parque.vehiculos.create') }}" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Registrar vehículo</a>
+                                <a href="{{ route('parque.vehiculos.create') }}" class="btn btn-primary" data-modal><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Registrar vehículo</a>
                             @endcan
                         </x-vacio>
                     </td>

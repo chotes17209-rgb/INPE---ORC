@@ -22,21 +22,21 @@
     .gob td { padding: 4px 7px; font-size: 7.6px; font-weight: bold; color: #fff; vertical-align: middle; line-height: 1.15; }
     .gob .peru { background: #c8102e; font-size: 9px; letter-spacing: .5px; }
     .gob .sector { background: #3b3b3b; }
-    .gob .entidad { background: #6b6b6b; }
+    .gob .entidad { background: #141414; color: #F4C014; }
     .gob .oficina { background: #e4e7eb; color: #1b2635; }
 
-    .doc-titulo { margin-top: 7px; border-bottom: 1.4px solid #12355b; padding-bottom: 4px; }
-    .doc-titulo h1 { margin: 0; font-size: 11.5px; color: #12355b; text-transform: uppercase; letter-spacing: .3px; }
+    .doc-titulo { margin-top: 6px; border-bottom: 2px solid #E0AE0B; padding-bottom: 4px; }
+    .doc-titulo h1 { margin: 0; font-size: 11.5px; color: #141414; text-transform: uppercase; letter-spacing: .3px; }
     .doc-titulo .sub { font-size: 7.6px; color: #5d6878; margin-top: 1px; }
     .doc-meta { font-size: 7.2px; color: #5d6878; text-align: right; line-height: 1.45; }
     .doc-meta strong { color: #1b2635; }
 
     /* Tablas de datos */
     table.datos { width: 100%; border-collapse: collapse; margin-top: 6px; }
-    table.datos th { background: #12355b; color: #fff; font-size: 7px; font-weight: bold; text-transform: uppercase; padding: 4px 3px; text-align: left; border: .5px solid #12355b; }
+    table.datos th { background: #141414; color: #fff; font-size: 7px; font-weight: bold; text-transform: uppercase; padding: 4px 3px; text-align: left; border: .5px solid #141414; border-bottom: 1.6px solid #E0AE0B; }
     table.datos td { padding: 3.2px 3px; border: .5px solid #d3d9e1; vertical-align: top; }
-    table.datos tbody tr:nth-child(even) td { background: #f5f7fa; }
-    table.datos tfoot td { background: #e8eef6; font-weight: bold; border-top: 1.2px solid #12355b; }
+    table.datos tbody tr:nth-child(even) td { background: #f7f5ef; }
+    table.datos tfoot td { background: #fdf3d0; font-weight: bold; border-top: 1.2px solid #141414; }
     .r { text-align: right; } .c { text-align: center; } .nw { white-space: nowrap; }
     .mono { font-family: 'DejaVu Sans Mono', monospace; font-size: 7.6px; }
     .muted { color: #6b7685; }
@@ -44,12 +44,12 @@
 
     /* Bloques de resumen */
     table.resumen { width: 100%; border-collapse: separate; border-spacing: 4px 0; margin: 6px -4px 2px; }
-    table.resumen td { background: #f2f5f9; border: .5px solid #d3d9e1; border-left: 3px solid #12355b; padding: 5px 7px; }
+    table.resumen td { background: #faf8f2; border: .5px solid #ddd8cb; border-left: 3px solid #E0AE0B; padding: 5px 7px; }
     table.resumen .et { font-size: 6.6px; text-transform: uppercase; color: #5d6878; letter-spacing: .3px; }
-    table.resumen .va { font-size: 10.5px; font-weight: bold; color: #12355b; }
+    table.resumen .va { font-size: 10.5px; font-weight: bold; color: #141414; }
 
     .filtros { margin-top: 5px; padding: 4px 6px; background: #f7f9fb; border: .5px solid #d3d9e1; font-size: 7.2px; color: #3f4a59; }
-    .seccion { margin: 11px 0 3px; font-size: 8.6px; font-weight: bold; color: #12355b; text-transform: uppercase; letter-spacing: .3px; border-bottom: .6px solid #9aa6b5; padding-bottom: 2px; }
+    .seccion { margin: 11px 0 3px; font-size: 8.6px; font-weight: bold; color: #6B5408; text-transform: uppercase; letter-spacing: .3px; border-bottom: .6px solid #9aa6b5; padding-bottom: 2px; }
 
     /* Fichas (comprobantes) */
     table.ficha { width: 100%; border-collapse: collapse; margin-top: 3px; }
@@ -61,8 +61,8 @@
     .e-success { background: #e2f2e8; color: #17603c; }
     .e-warning { background: #fbefd9; color: #8a5409; }
     .e-danger  { background: #fbe4e1; color: #a01b12; }
-    .e-info    { background: #e1edf7; color: #1a5680; }
-    .e-primary { background: #e8eef6; color: #12355b; }
+    .e-info    { background: #efede7; color: #3d3a33; }
+    .e-primary { background: #efede7; color: #141414; }
     .e-secondary { background: #eceff3; color: #4b5563; }
 
     .firmas { width: 100%; margin-top: 46px; border-collapse: collapse; }
@@ -77,6 +77,9 @@
 <div class="membrete">
     <table style="width:100%;border-collapse:collapse">
         <tr>
+            <td style="vertical-align:top;width:1.25cm;padding-right:6px">
+                <img src="{{ public_path('img/inpe-escudo.png') }}" alt="INPE" style="height:1.3cm">
+            </td>
             <td style="vertical-align:top">
                 <table class="gob">
                     <tr>

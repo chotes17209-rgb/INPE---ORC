@@ -5,11 +5,11 @@
 @section('breadcrumb')<li class="breadcrumb-item active" aria-current="page">Suministro de alimentos</li>@endsection
 
 @section('page-actions')
-    <a href="{{ route('alimentos.resumen-mensual') }}" class="btn btn-outline-primary"><i class="bi bi-calendar3 me-1" aria-hidden="true"></i>Resumen mensual</a>
     @can('registrar')
-        <a href="{{ route('alimentos.registros.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Nuevo registro</a>
+        <a href="{{ route('alimentos.registros.create') }}" class="btn btn-primary btn-lg" data-modal><i class="bi bi-plus-circle me-2" aria-hidden="true"></i>Nuevo registro</a>
     @endcan
 @endsection
+@section('pestanas')@include('partials.pestanas', ['modulo' => 'alimentos'])@endsection
 
 @section('content')
 <div class="kpi-grid">
@@ -86,53 +86,46 @@
                 <tr>
                     <th scope="col">N° registro</th>
                     <th scope="col">Proveedor</th>
-                    <th scope="col">Establecimiento</th>
-                    <th scope="col">Periodo</th>
-                    <th scope="col">Comprobante</th>
-                    <th scope="col">O.S. / SIAF</th>
+                    <th scope="col">Establecimiento y periodo</th>
                     <th scope="col" class="text-end">Importe</th>
                     <th scope="col">Estado</th>
-                    <th scope="col" class="text-end"><span class="visually-hidden">Acciones</span></th>
+                    <th scope="col" class="text-end">Acciones</th>
                 </tr>
             </thead>
             <tbody>
             @forelse($registros as $r)
                 <tr class="{{ $r->estado === 'vencido' ? 'row-alert' : '' }}">
-                    <td><a href="{{ route('alimentos.registros.show', $r) }}" class="codigo">{{ $r->numero_registro }}</a></td>
-                    <td>
-                        <span class="cell-main">{{ Str::limit($r->proveedor_razon_social, 38) }}</span>
+                    <td><a href="{{ route('alimentos.registros.show', $r) }}" class="codigo" data-modal>{{ $r->numero_registro }}</a></td>
+                    <td class="cell-proveedor">
+                        <span class="cell-main">{{ Str::limit($r->proveedor_razon_social, 45) }}</span>
                         <span class="cell-sub">RUC {{ $r->proveedor_ruc ?? '—' }}@if($r->numero_contrato) · {{ $r->numero_contrato }}@endif</span>
                     </td>
-                    <td><span class="etiqueta">{{ $r->penal_label }}</span></td>
                     <td class="text-nowrap">
+                        <span class="etiqueta mb-1">{{ $r->penal_label }}</span><br>
                         {{ $r->periodo_inicio->format('d/m/Y') }}
                         <span class="cell-sub {{ $r->estado === 'vencido' ? 'text-danger fw-semibold' : '' }}">al {{ $r->periodo_fin->format('d/m/Y') }}</span>
-                    </td>
-                    <td class="text-nowrap">
-                        {{ $r->comprobante ?? '—' }}
-                        <span class="cell-sub">{{ $r->fecha_emision->format('d/m/Y') }}</span>
-                    </td>
-                    <td class="text-nowrap">
-                        {{ $r->orden_servicio ?? '—' }}
-                        <span class="cell-sub">SIAF {{ $r->registro_siaf ?? '—' }}</span>
                     </td>
                     <td class="text-end money fw-semibold">S/ {{ number_format($r->total, 2) }}</td>
                     <td><x-estado :color="$r->estado_badge">{{ $r->estado_label }}</x-estado></td>
                     <td>
                         <div class="table-actions">
-                            <a href="{{ route('alimentos.registros.show', $r) }}" class="btn btn-sm btn-light btn-icon" title="Ver detalle" aria-label="Ver detalle de {{ $r->numero_registro }}"><i class="bi bi-eye" aria-hidden="true"></i></a>
+                            <x-accion tipo="ver" :href="route('alimentos.registros.show', $r)" :nombre="$r->numero_registro" />
                             @if($r->es_editable)
                                 @can('registrar')
-                                    <a href="{{ route('alimentos.registros.edit', $r) }}" class="btn btn-sm btn-light btn-icon" title="Editar" aria-label="Editar {{ $r->numero_registro }}"><i class="bi bi-pencil" aria-hidden="true"></i></a>
+                                    <x-accion tipo="editar" :href="route('alimentos.registros.edit', $r)" :nombre="$r->numero_registro" />
                                 @endcan
                             @endif
                             @if($r->puede_pagarse)
                                 @can('aprobar')
-                                    <button type="button" class="btn btn-sm btn-outline-success btn-icon" title="Registrar pago" aria-label="Registrar pago de {{ $r->numero_registro }}"
-                                            data-pago-url="{{ route('alimentos.registros.aprobar', $r) }}" data-pago-codigo="{{ $r->numero_registro }}"
-                                            data-pago-detalle="{{ $r->proveedor_razon_social }}" data-pago-total="{{ $r->total }}">
-                                        <i class="bi bi-cash-coin" aria-hidden="true"></i>
-                                    </button>
+                                    <x-accion tipo="pagar" :nombre="$r->numero_registro"
+                                              data-pago-url="{{ route('alimentos.registros.aprobar', $r) }}" data-pago-codigo="{{ $r->numero_registro }}"
+                                              data-pago-detalle="{{ $r->proveedor_razon_social }}" data-pago-total="{{ $r->total }}" />
+                                @endcan
+                            @endif
+                            @if($r->es_editable)
+                                @can('aprobar')
+                                    <x-accion tipo="eliminar" :href="route('alimentos.registros.destroy', $r)" :nombre="$r->numero_registro"
+                                              confirmar="Se eliminará el registro {{ $r->numero_registro }} de {{ $r->proveedor_razon_social }}. Esta acción quedará registrada en la auditoría." />
                                 @endcan
                             @endif
                         </div>
@@ -140,11 +133,11 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="9">
+                    <td colspan="6">
                         <x-vacio icono="basket3" titulo="No se encontraron registros"
                                  :texto="request()->anyFilled(['buscar', 'penal', 'estado', 'mes', 'anio']) ? 'Pruebe con otros criterios de búsqueda.' : 'Aún no se ha registrado ningún suministro de alimentos.'">
                             @can('registrar')
-                                <a href="{{ route('alimentos.registros.create') }}" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Registrar suministro</a>
+                                <a href="{{ route('alimentos.registros.create') }}" class="btn btn-primary" data-modal><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Registrar suministro</a>
                             @endcan
                         </x-vacio>
                     </td>
@@ -154,7 +147,7 @@
             @if($registros->count())
             <tfoot>
                 <tr>
-                    <td colspan="6" class="text-end">Subtotal de la página</td>
+                    <td colspan="3" class="text-end">Subtotal de la página</td>
                     <td class="text-end money">S/ {{ number_format($registros->sum('total'), 2) }}</td>
                     <td colspan="2"></td>
                 </tr>
@@ -166,8 +159,4 @@
         <div class="paginacion">{{ $registros->links() }}</div>
     @endif
 </div>
-
-@can('aprobar')
-    @include('partials.modal-pago')
-@endcan
 @endsection

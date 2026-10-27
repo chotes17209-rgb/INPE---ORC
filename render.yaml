@@ -33,8 +33,12 @@ services:
         value: "true"
       - key: IA_API_KEY
         sync: false
+      - key: JSONPE_TOKEN
+        sync: false
       - key: APIPERU_TOKEN
         sync: false
+      - key: APIPERU_URL
+        value: https://api.decolecta.com/v1
 
 databases:
   - name: inpe-orc-db

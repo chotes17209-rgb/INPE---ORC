@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(request()->header('X-Modal') ? 'layouts.modal' : 'layouts.app')
 @section('title', $usuario->nombre_completo)
 @section('page-title', $usuario->nombre_completo)
 @section('page-subtitle', ($usuario->cargo ?: 'Sin cargo registrado') . ' · ' . ($usuario->area ?: 'Sin área'))
@@ -11,7 +11,7 @@
 
 @section('page-actions')
     @unless($protegido)
-        <a href="{{ route('admin.usuarios.edit', $usuario) }}" class="btn btn-primary"><i class="bi bi-pencil me-1" aria-hidden="true"></i>Editar</a>
+        <a href="{{ route('admin.usuarios.edit', $usuario) }}" data-modal class="btn btn-primary"><i class="bi bi-pencil me-1" aria-hidden="true"></i>Editar</a>
     @endunless
 @endsection
 

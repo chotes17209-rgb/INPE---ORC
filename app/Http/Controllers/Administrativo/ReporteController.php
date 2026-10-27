@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Contabilidad;
+namespace App\Http\Controllers\Administrativo;
 
 use App\Http\Controllers\Controller;
 use App\Support\DocumentoPdf;

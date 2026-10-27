@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(request()->header('X-Modal') ? 'layouts.modal' : 'layouts.app')
 @section('title', 'Operación ' . $operacion->numero_operacion)
 @section('page-title', 'Operación ' . $operacion->numero_operacion)
 @section('page-subtitle', $operacion->tipo_servicio_label . ' · ' . $operacion->entidad_proveedora . ' · Periodo ' . $operacion->periodo)
@@ -11,7 +11,7 @@
     <a href="{{ route('operaciones.registros.comprobante-pdf', $operacion) }}" class="btn btn-outline-primary"><i class="bi bi-file-earmark-pdf me-1" aria-hidden="true"></i>Ficha PDF</a>
     @if($operacion->es_editable)
         @can('registrar')
-            <a href="{{ route('operaciones.registros.edit', $operacion) }}" class="btn btn-outline-primary"><i class="bi bi-pencil me-1" aria-hidden="true"></i>Editar</a>
+            <a href="{{ route('operaciones.registros.edit', $operacion) }}" data-modal class="btn btn-outline-primary"><i class="bi bi-pencil me-1" aria-hidden="true"></i>Editar</a>
         @endcan
     @endif
     @if($operacion->puede_pagarse)
@@ -146,8 +146,4 @@
         @endif
     </div>
 </div>
-
-@can('aprobar')
-    @include('partials.modal-pago')
-@endcan
 @endsection

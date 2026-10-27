@@ -1,13 +1,13 @@
 @extends('layouts.app')
 @section('title', 'Usuarios')
-@section('page-title', 'Usuarios del sistema')
+@section('page-title', 'Usuarios y permisos')
 @section('page-subtitle', 'Cuentas de acceso del personal y roles asignados.')
-@section('breadcrumb')<li class="breadcrumb-item active" aria-current="page">Usuarios</li>@endsection
+@section('breadcrumb')<li class="breadcrumb-item active" aria-current="page">Usuarios y permisos</li>@endsection
 
 @section('page-actions')
-    <a href="{{ route('admin.roles.index') }}" class="btn btn-outline-primary"><i class="bi bi-shield-lock me-1" aria-hidden="true"></i>Roles y permisos</a>
-    <a href="{{ route('admin.usuarios.create') }}" class="btn btn-primary"><i class="bi bi-person-plus me-1" aria-hidden="true"></i>Nuevo usuario</a>
+    <a href="{{ route('admin.usuarios.create') }}" class="btn btn-primary btn-lg" data-modal><i class="bi bi-person-plus me-2" aria-hidden="true"></i>Nuevo usuario</a>
 @endsection
+@section('pestanas')@include('partials.pestanas', ['modulo' => 'admin'])@endsection
 
 @section('content')
 <div class="card">
@@ -54,7 +54,7 @@
                     <th scope="col">Rol</th>
                     <th scope="col">Último acceso</th>
                     <th scope="col">Estado</th>
-                    <th scope="col" class="text-end"><span class="visually-hidden">Acciones</span></th>
+                    <th scope="col" class="text-end">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -62,7 +62,7 @@
                 @php $protegido = $u->hasRole('super-admin') && ! auth()->user()->hasRole('super-admin'); @endphp
                 <tr>
                     <td>
-                        <a href="{{ route('admin.usuarios.show', $u) }}" class="d-flex align-items-center gap-2 text-reset">
+                        <a href="{{ route('admin.usuarios.show', $u) }}" class="d-flex align-items-center gap-2 text-reset" data-modal>
                             <span class="avatar" aria-hidden="true">{{ $u->iniciales }}</span>
                             <span>
                                 <span class="cell-main d-block">{{ $u->nombre_completo }}@if($u->is(auth()->user())) <span class="badge text-bg-light border ms-1">Usted</span>@endif</span>
@@ -87,9 +87,9 @@
                     <td><x-estado :color="$u->estado_badge">{{ $u->estado_label }}</x-estado></td>
                     <td>
                         <div class="table-actions">
-                            <a href="{{ route('admin.usuarios.show', $u) }}" class="btn btn-sm btn-light btn-icon" title="Ver" aria-label="Ver {{ $u->nombre_completo }}"><i class="bi bi-eye" aria-hidden="true"></i></a>
+                            <x-accion tipo="ver" :href="route('admin.usuarios.show', $u)" :nombre="$u->nombre_completo" />
                             @unless($protegido)
-                                <a href="{{ route('admin.usuarios.edit', $u) }}" class="btn btn-sm btn-light btn-icon" title="Editar" aria-label="Editar {{ $u->nombre_completo }}"><i class="bi bi-pencil" aria-hidden="true"></i></a>
+                                <x-accion tipo="editar" :href="route('admin.usuarios.edit', $u)" :nombre="$u->nombre_completo" />
                                 @unless($u->is(auth()->user()))
                                     <form method="POST" action="{{ route('admin.usuarios.toggle-estado', $u) }}"
                                           data-confirm="{{ $u->estado === 'activo' ? 'La cuenta de ' . $u->nombre_completo . ' quedará inactiva y no podrá iniciar sesión.' : 'La cuenta de ' . $u->nombre_completo . ' podrá volver a iniciar sesión.' }}"
@@ -97,8 +97,8 @@
                                           data-confirm-btn="{{ $u->estado === 'activo' ? 'Desactivar' : 'Activar' }}"
                                           data-confirm-variant="{{ $u->estado === 'activo' ? 'warning' : 'success' }}">
                                         @csrf @method('PATCH')
-                                        <button type="submit" class="btn btn-sm btn-light btn-icon" title="{{ $u->estado === 'activo' ? 'Desactivar' : 'Activar' }}" aria-label="{{ $u->estado === 'activo' ? 'Desactivar' : 'Activar' }} cuenta">
-                                            <i class="bi bi-{{ $u->estado === 'activo' ? 'pause-circle' : 'play-circle' }}" aria-hidden="true"></i>
+                                        <button type="submit" class="btn btn-accion btn-accion--{{ $u->estado === 'activo' ? 'pausar' : 'activar' }}">
+                                            <i class="bi bi-{{ $u->estado === 'activo' ? 'pause-circle' : 'play-circle' }}" aria-hidden="true"></i><span>{{ $u->estado === 'activo' ? 'Desactivar' : 'Activar' }}</span>
                                         </button>
                                     </form>
                                 @endunless

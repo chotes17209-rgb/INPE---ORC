@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(request()->header('X-Modal') ? 'layouts.modal' : 'layouts.app')
 @section('title', 'Vehículo ' . $vehiculo->placa)
 @section('page-title', 'Vehículo ' . $vehiculo->placa)
 @section('page-subtitle', $vehiculo->descripcion . ' · ' . $vehiculo->anio_fabricacion . ' · ' . $vehiculo->tipo_label)
@@ -8,13 +8,15 @@
 @endsection
 
 @section('page-actions')
-    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalIA" data-analizar-vehiculo="{{ $vehiculo->id }}">
-        <i class="bi bi-stars me-1" aria-hidden="true"></i>Analizar con IA
-    </button>
+    @unless(request()->header('X-Modal'))
+        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalIA" data-analizar-vehiculo="{{ $vehiculo->id }}">
+            <i class="bi bi-stars me-1" aria-hidden="true"></i>Analizar con IA
+        </button>
+    @endunless
     @can('registrar')
-        <a href="{{ route('parque.vehiculos.edit', $vehiculo) }}" class="btn btn-outline-primary"><i class="bi bi-pencil me-1" aria-hidden="true"></i>Editar</a>
+        <a href="{{ route('parque.vehiculos.edit', $vehiculo) }}" data-modal class="btn btn-outline-primary"><i class="bi bi-pencil me-1" aria-hidden="true"></i>Editar</a>
         @if($vehiculo->estado !== 'baja')
-            <a href="{{ route('parque.mantenimientos.create', ['vehiculo_id' => $vehiculo->id]) }}" class="btn btn-primary"><i class="bi bi-tools me-1" aria-hidden="true"></i>Programar mantenimiento</a>
+            <a href="{{ route('parque.mantenimientos.create', ['vehiculo_id' => $vehiculo->id]) }}" data-modal class="btn btn-primary"><i class="bi bi-tools me-1" aria-hidden="true"></i>Programar mantenimiento</a>
         @endif
     @endcan
 @endsection
@@ -83,7 +85,7 @@
                     @forelse($mantenimientos as $m)
                         <tr class="{{ $m->esta_atrasado ? 'row-warning' : '' }}">
                             <td class="text-nowrap">
-                                <a href="{{ route('parque.mantenimientos.show', $m) }}">{{ ($m->fecha_realizado ?? $m->fecha_programada)->format('d/m/Y') }}</a>
+                                <a href="{{ route('parque.mantenimientos.show', $m) }}" data-modal>{{ ($m->fecha_realizado ?? $m->fecha_programada)->format('d/m/Y') }}</a>
                                 <span class="cell-sub">{{ $m->fecha_realizado ? 'Ejecutado' : 'Programado' }}</span>
                             </td>
                             <td><x-estado :color="$m->tipo_badge">{{ $m->tipo_label }}</x-estado></td>
@@ -157,7 +159,8 @@
     </div>
 </div>
 
-{{-- Análisis con inteligencia artificial --}}
+{{-- Análisis con inteligencia artificial (solo en la página completa) --}}
+@unless(request()->header('X-Modal'))
 <div class="modal fade" id="modalIA" tabindex="-1" aria-labelledby="modalIATitulo" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
@@ -173,6 +176,7 @@
         </div>
     </div>
 </div>
+@endunless
 @endsection
 
 @push('scripts')

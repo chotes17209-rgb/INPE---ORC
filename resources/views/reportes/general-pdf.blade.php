@@ -1,5 +1,5 @@
 @extends('reportes.layouts.pdf')
-@section('titulo', 'Reporte general de gestión contable — Ejercicio ' . $anio)
+@section('titulo', 'Reporte general de gestión administrativa — Ejercicio ' . $anio)
 @section('subtitulo', 'Ejecución del gasto y detalle de registros por módulo')
 @section('codigo', 'REP-GEN-' . $anio)
 

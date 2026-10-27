@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <title>@yield('title', 'Inicio') · {{ config('inpe.siglas') }} {{ config('inpe.oficina') }}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -41,6 +42,8 @@
         </div>
         @endif
 
+        @yield('pestanas')
+
         {{-- Mensajes del sistema --}}
         @if($errors->any())
             <div class="callout callout--danger mb-3" role="alert">
@@ -71,7 +74,7 @@
 </div>
 
 {{-- Mensajes emergentes --}}
-<div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer" aria-live="polite">
+<div class="toast-container position-fixed top-0 end-0 p-3 mt-5" id="toastContainer" aria-live="polite">
     @foreach(['success' => 'check-circle-fill', 'error' => 'x-octagon-fill'] as $tipo => $icono)
         @if(session($tipo))
         <div class="toast align-items-center text-bg-{{ $tipo === 'error' ? 'danger' : 'success' }} border-0" role="status">
@@ -84,7 +87,17 @@
     @endforeach
 </div>
 
+{{-- Ventana flotante para registrar, ver y editar sin salir del listado --}}
+<div class="modal fade erp-modal" id="modalFormulario" tabindex="-1" aria-labelledby="modalFormularioTitulo" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable modal-fullscreen-lg-down">
+        <div class="modal-content"></div>
+    </div>
+</div>
+
 @include('partials.modal-confirmar')
+@can('aprobar')
+    @include('partials.modal-pago')
+@endcan
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 @stack('vendor-scripts')

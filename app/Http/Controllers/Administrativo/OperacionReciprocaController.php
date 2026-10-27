@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Contabilidad;
+namespace App\Http\Controllers\Administrativo;
 
 use App\Http\Controllers\Controller;
 use App\Support\DocumentoPdf;
@@ -59,8 +59,7 @@ class OperacionReciprocaController extends Controller
 
         $operacion = OperacionReciproca::create($data);
 
-        return redirect()->route('operaciones.registros.show', $operacion)
-            ->with('success', "Se registró la operación recíproca {$operacion->numero_operacion}.");
+        return $this->exito("Se registró la operación recíproca {$operacion->numero_operacion}.", route('operaciones.registros.show', $operacion));
     }
 
     public function show(OperacionReciproca $operacion)
@@ -73,8 +72,7 @@ class OperacionReciprocaController extends Controller
     public function edit(OperacionReciproca $operacion)
     {
         if (! $operacion->es_editable) {
-            return redirect()->route('operaciones.registros.show', $operacion)
-                ->with('info', 'Una operación pagada no puede modificarse.');
+            return $this->aviso('Una operación pagada no puede modificarse.', route('operaciones.registros.show', $operacion), 'info');
         }
 
         return view('operaciones.edit', compact('operacion'));
@@ -83,8 +81,7 @@ class OperacionReciprocaController extends Controller
     public function update(OperacionReciprocaRequest $request, OperacionReciproca $operacion)
     {
         if (! $operacion->es_editable) {
-            return redirect()->route('operaciones.registros.show', $operacion)
-                ->with('info', 'Una operación pagada no puede modificarse.');
+            return $this->aviso('Una operación pagada no puede modificarse.', route('operaciones.registros.show', $operacion), 'info');
         }
 
         $data = $request->validated();
@@ -105,26 +102,24 @@ class OperacionReciprocaController extends Controller
 
         $operacion->update($data);
 
-        return redirect()->route('operaciones.registros.show', $operacion)
-            ->with('success', 'Los cambios fueron guardados correctamente.');
+        return $this->exito('Los cambios fueron guardados correctamente.', route('operaciones.registros.show', $operacion));
     }
 
     public function destroy(OperacionReciproca $operacion)
     {
         if (! $operacion->es_editable) {
-            return back()->with('error', 'Una operación pagada no puede eliminarse.');
+            return $this->aviso('Una operación pagada no puede eliminarse.');
         }
 
         $operacion->delete();
 
-        return redirect()->route('operaciones.registros.index')
-            ->with('success', "Se eliminó la operación {$operacion->numero_operacion}.");
+        return $this->exito("Se eliminó la operación {$operacion->numero_operacion}.", route('operaciones.registros.index'), true);
     }
 
     public function aprobar(RegistrarPagoRequest $request, OperacionReciproca $operacion)
     {
         if (! $operacion->puede_pagarse) {
-            return back()->with('error', 'La operación seleccionada no admite el registro de pagos.');
+            return $this->aviso('La operación seleccionada no admite el registro de pagos.');
         }
 
         $operacion->update([
@@ -134,7 +129,7 @@ class OperacionReciprocaController extends Controller
             'fecha_aprobacion' => now(),
         ]);
 
-        return back()->with('success', "Se registró el pago de {$operacion->numero_operacion}.");
+        return $this->exito("Se registró el pago de {$operacion->numero_operacion}.", url()->previous());
     }
 
     public function resumenMensual(Request $request)

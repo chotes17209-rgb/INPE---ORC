@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Mantenimientos vehiculares')
-@section('page-title', 'Mantenimientos vehiculares')
-@section('page-subtitle', 'Programación, ejecución y costo de los mantenimientos de la flota.')
+@section('page-title', 'Parque automotor')
+@section('page-subtitle', 'Mantenimientos: programación, conformidad y costo de los servicios de la flota.')
 @section('breadcrumb')
     <li class="breadcrumb-item"><a href="{{ route('parque.vehiculos.index') }}">Parque automotor</a></li>
     <li class="breadcrumb-item active" aria-current="page">Mantenimientos</li>
@@ -9,9 +9,10 @@
 
 @section('page-actions')
     @can('registrar')
-        <a href="{{ route('parque.mantenimientos.create') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Programar mantenimiento</a>
+        <a href="{{ route('parque.mantenimientos.create') }}" class="btn btn-primary btn-lg" data-modal><i class="bi bi-plus-circle me-2" aria-hidden="true"></i>Nuevo mantenimiento</a>
     @endcan
 @endsection
+@section('pestanas')@include('partials.pestanas', ['modulo' => 'parque'])@endsection
 
 @section('content')
 @php $filtrado = request()->anyFilled(['vehiculo', 'estado', 'tipo_mantenimiento', 'fecha_desde', 'fecha_hasta']); @endphp
@@ -82,22 +83,23 @@
                     <th scope="col">Tipo</th>
                     <th scope="col">Trabajo</th>
                     <th scope="col">Programado</th>
-                    <th scope="col">O.S. / SIAF</th>
-                    <th scope="col">Taller</th>
                     <th scope="col" class="text-end">Importe</th>
                     <th scope="col">Estado</th>
-                    <th scope="col" class="text-end"><span class="visually-hidden">Acciones</span></th>
+                    <th scope="col" class="text-end">Acciones</th>
                 </tr>
             </thead>
             <tbody>
             @forelse($mantenimientos as $m)
                 <tr class="{{ $m->esta_atrasado ? 'row-alert' : '' }}">
                     <td>
-                        <a href="{{ route('parque.vehiculos.show', $m->vehiculo_id) }}" class="codigo">{{ $m->vehiculo?->placa }}</a>
+                        <a href="{{ route('parque.vehiculos.show', $m->vehiculo_id) }}" class="codigo" data-modal>{{ $m->vehiculo?->placa }}</a>
                         <span class="cell-sub">{{ $m->vehiculo?->descripcion }}</span>
                     </td>
                     <td><x-estado :color="$m->tipo_badge">{{ $m->tipo_label }}</x-estado></td>
-                    <td>{{ Str::limit($m->descripcion, 45) }}</td>
+                    <td>
+                        {{ Str::limit($m->descripcion, 50) }}
+                        @if($m->taller)<span class="cell-sub">{{ $m->taller }}</span>@endif
+                    </td>
                     <td class="text-nowrap">
                         {{ $m->fecha_programada->format('d/m/Y') }}
                         @if($m->esta_atrasado)
@@ -106,11 +108,6 @@
                             <span class="cell-sub">Ejecutado {{ $m->fecha_realizado->format('d/m/Y') }}</span>
                         @endif
                     </td>
-                    <td class="text-nowrap">
-                        {{ $m->orden_servicio ?? '—' }}
-                        <span class="cell-sub">SIAF {{ $m->registro_siaf ?? '—' }}</span>
-                    </td>
-                    <td>{{ $m->taller ?? '—' }}</td>
                     <td class="text-end money">
                         <span class="fw-semibold">S/ {{ number_format($m->total_efectivo, 2) }}</span>
                         @if($m->estado !== 'completado')<span class="cell-sub">Estimado</span>@endif
@@ -118,13 +115,15 @@
                     <td><x-estado :color="$m->estado_badge">{{ $m->estado_label }}</x-estado></td>
                     <td>
                         <div class="table-actions">
-                            <a href="{{ route('parque.mantenimientos.show', $m) }}" class="btn btn-sm btn-light btn-icon" title="Ver detalle" aria-label="Ver detalle"><i class="bi bi-eye" aria-hidden="true"></i></a>
+                            <x-accion tipo="ver" :href="route('parque.mantenimientos.show', $m)" :nombre="'del mantenimiento de ' . $m->vehiculo?->placa" texto="Ver" />
                             @if($m->esta_abierto)
                                 @can('registrar')
-                                    <a href="{{ route('parque.mantenimientos.edit', $m) }}" class="btn btn-sm btn-light btn-icon" title="Editar" aria-label="Editar"><i class="bi bi-pencil" aria-hidden="true"></i></a>
+                                    <x-accion tipo="editar" :href="route('parque.mantenimientos.edit', $m)" />
                                 @endcan
                                 @can('aprobar')
-                                    <a href="{{ route('parque.mantenimientos.completar', $m) }}" class="btn btn-sm btn-outline-success btn-icon" title="Registrar conformidad" aria-label="Registrar conformidad"><i class="bi bi-check2-circle" aria-hidden="true"></i></a>
+                                    <x-accion tipo="completar" :href="route('parque.mantenimientos.completar', $m)" />
+                                    <x-accion tipo="eliminar" :href="route('parque.mantenimientos.destroy', $m)"
+                                              confirmar="Se eliminará el mantenimiento programado del vehículo {{ $m->vehiculo?->placa }}." />
                                 @endcan
                             @endif
                         </div>
@@ -132,11 +131,11 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="9">
+                    <td colspan="7">
                         <x-vacio icono="tools" titulo="No se encontraron mantenimientos"
                                  :texto="$filtrado ? 'Pruebe con otros criterios de búsqueda.' : 'Aún no se ha programado ningún mantenimiento.'">
                             @can('registrar')
-                                <a href="{{ route('parque.mantenimientos.create') }}" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Programar mantenimiento</a>
+                                <a href="{{ route('parque.mantenimientos.create') }}" class="btn btn-primary" data-modal><i class="bi bi-plus-lg me-1" aria-hidden="true"></i>Programar mantenimiento</a>
                             @endcan
                         </x-vacio>
                     </td>
