@@ -97,8 +97,7 @@
                     <th scope="col">Servicio</th>
                     <th scope="col">Entidad proveedora</th>
                     <th scope="col">Vencimiento</th>
-                    <th scope="col" class="text-end">Importe</th>
-                    <th scope="col">Estado</th>
+                    <th scope="col" class="text-end">Importe y estado</th>
                     <th scope="col" class="text-end">Acciones</th>
                 </tr>
             </thead>
@@ -120,8 +119,10 @@
                             <span class="cell-sub">{{ $op->fecha_vencimiento->isToday() ? 'Vence hoy' : 'en ' . (int) today()->diffInDays($op->fecha_vencimiento) . ' día(s)' }}</span>
                         @endif
                     </td>
-                    <td class="text-end money fw-semibold">S/ {{ number_format($op->total, 2) }}</td>
-                    <td><x-estado :color="$op->estado_badge">{{ $op->estado_label }}</x-estado></td>
+                    <td class="text-end">
+                        <span class="money fw-semibold d-block">S/ {{ number_format($op->total, 2) }}</span>
+                        <x-estado :color="$op->estado_badge" class="mt-1">{{ $op->estado_label }}</x-estado>
+                    </td>
                     <td>
                         <div class="table-actions">
                             <x-accion tipo="ver" :href="route('operaciones.registros.show', $op)" :nombre="$op->numero_operacion" />
@@ -148,7 +149,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7">
+                    <td colspan="6">
                         <x-vacio icono="receipt" titulo="No se encontraron operaciones"
                                  :texto="$filtrado ? 'Pruebe con otros criterios de búsqueda.' : 'Aún no se ha registrado ninguna operación recíproca.'">
                             @can('registrar')
@@ -164,7 +165,7 @@
                 <tr>
                     <td colspan="4" class="text-end">Subtotal de la página</td>
                     <td class="text-end money">S/ {{ number_format($operaciones->sum('total'), 2) }}</td>
-                    <td colspan="2"></td>
+                    <td></td>
                 </tr>
             </tfoot>
             @endif

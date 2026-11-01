@@ -87,8 +87,7 @@
                     <th scope="col">N° registro</th>
                     <th scope="col">Proveedor</th>
                     <th scope="col">Establecimiento y periodo</th>
-                    <th scope="col" class="text-end">Importe</th>
-                    <th scope="col">Estado</th>
+                    <th scope="col" class="text-end">Importe y estado</th>
                     <th scope="col" class="text-end">Acciones</th>
                 </tr>
             </thead>
@@ -105,8 +104,10 @@
                         {{ $r->periodo_inicio->format('d/m/Y') }}
                         <span class="cell-sub {{ $r->estado === 'vencido' ? 'text-danger fw-semibold' : '' }}">al {{ $r->periodo_fin->format('d/m/Y') }}</span>
                     </td>
-                    <td class="text-end money fw-semibold">S/ {{ number_format($r->total, 2) }}</td>
-                    <td><x-estado :color="$r->estado_badge">{{ $r->estado_label }}</x-estado></td>
+                    <td class="text-end">
+                        <span class="money fw-semibold d-block">S/ {{ number_format($r->total, 2) }}</span>
+                        <x-estado :color="$r->estado_badge" class="mt-1">{{ $r->estado_label }}</x-estado>
+                    </td>
                     <td>
                         <div class="table-actions">
                             <x-accion tipo="ver" :href="route('alimentos.registros.show', $r)" :nombre="$r->numero_registro" />
@@ -133,7 +134,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6">
+                    <td colspan="5">
                         <x-vacio icono="basket3" titulo="No se encontraron registros"
                                  :texto="request()->anyFilled(['buscar', 'penal', 'estado', 'mes', 'anio']) ? 'Pruebe con otros criterios de búsqueda.' : 'Aún no se ha registrado ningún suministro de alimentos.'">
                             @can('registrar')
@@ -149,7 +150,7 @@
                 <tr>
                     <td colspan="3" class="text-end">Subtotal de la página</td>
                     <td class="text-end money">S/ {{ number_format($registros->sum('total'), 2) }}</td>
-                    <td colspan="2"></td>
+                    <td></td>
                 </tr>
             </tfoot>
             @endif

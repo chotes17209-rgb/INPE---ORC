@@ -135,7 +135,7 @@ a:hover { text-decoration: underline; }
 /* Acciones de cada fila: botón con icono y texto (Ver, Editar, Pagar, Eliminar). */
 .btn-accion {
     display: inline-flex; align-items: center; gap: .35rem;
-    padding: .38rem .7rem; font-size: .9rem; font-weight: 600; line-height: 1.2;
+    padding: .38rem .6rem; font-size: .88rem; font-weight: 600; line-height: 1.2;
     border: 1px solid var(--erp-border); background: #fff; color: var(--erp-black);
     border-radius: var(--erp-radius-sm); white-space: nowrap;
 }
@@ -349,10 +349,19 @@ a.kpi:hover { text-decoration: none; border-color: var(--erp-gold); color: var(-
 .table .cell-sub { display: block; font-size: .86rem; color: var(--erp-muted); }
 .table .cell-main { font-weight: 600; }
 .table .money { font-variant-numeric: tabular-nums; white-space: nowrap; }
-.table-actions { display: grid; grid-template-columns: repeat(2, max-content); gap: .35rem; justify-content: end; }
+.table td:has(> .table-actions) { width: 1%; text-align: right; }
+/* Botones de acción en cuadrícula de 2 columnas del mismo ancho: quedan alineados en todas las filas. */
+.table-actions { display: inline-grid; grid-template-columns: repeat(2, 7.9rem); gap: .4rem; vertical-align: middle; text-align: left; }
 .table-actions > form { display: contents; }
-.table-actions .btn-accion { justify-content: center; }
-.table .cell-proveedor { min-width: 12rem; }
+.table-actions .btn-accion { justify-content: flex-start; width: 100%; }
+.table .x-nowrap, .table td .estado { white-space: nowrap; }
+.table .cell-proveedor { min-width: 11rem; }
+/* En laptops de 1280-1440 px el menú y las celdas se compactan para que la tabla quepa. */
+@media (min-width: 992px) and (max-width: 1440px) {
+    :root { --sidebar-width: 250px; }
+    .app-content { padding: 1.4rem 1.25rem; }
+    .table > thead th, .table > tbody > tr > td, .table > tbody > tr > th { padding-left: .5rem; padding-right: .5rem; }
+}
 tr.row-alert > td:first-child { box-shadow: inset 3px 0 0 var(--erp-danger); }
 tr.row-warning > td:first-child { box-shadow: inset 3px 0 0 var(--erp-warning); }
 .codigo { white-space: nowrap; font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: .92rem; color: #6B5408; }
@@ -621,12 +630,7 @@ a.list-row:hover { background: var(--erp-gold-soft); text-decoration: none; colo
 .acceso__titulo { display: block; font-weight: 800; font-size: 1.1rem; line-height: 1.25; }
 .acceso__detalle { display: block; font-size: .9rem; color: var(--erp-muted); }
 
-/* Columna de acciones siempre visible: si la tabla no cabe, se desplaza por debajo. */
-.table:has(.table-actions) > thead > tr > th:last-child,
-.table > tbody > tr > td:has(> .table-actions) {
-    position: sticky; right: 0; z-index: 2;
-    box-shadow: -8px 0 12px -8px rgba(20, 20, 20, .25);
+/* Pantallas más angostas: las acciones se apilan en una sola columna alineada. */
+@media (max-width: 1320px) {
+    .table-actions { grid-template-columns: 7.9rem; }
 }
-.table > tbody > tr > td:has(> .table-actions) { background: #fff; }
-.table-hover > tbody > tr:hover > td:has(> .table-actions) { background: #FBF6E4; }
-.table:has(.table-actions) > thead > tr > th:last-child { background: var(--erp-black); }

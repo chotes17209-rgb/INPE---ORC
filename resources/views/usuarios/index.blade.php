@@ -49,10 +49,8 @@
             <thead>
                 <tr>
                     <th scope="col">Usuario</th>
-                    <th scope="col">DNI</th>
                     <th scope="col">Cargo / área</th>
                     <th scope="col">Rol</th>
-                    <th scope="col">Último acceso</th>
                     <th scope="col">Estado</th>
                     <th scope="col" class="text-end">Acciones</th>
                 </tr>
@@ -67,24 +65,22 @@
                             <span>
                                 <span class="cell-main d-block">{{ $u->nombre_completo }}@if($u->is(auth()->user())) <span class="badge text-bg-light border ms-1">Usted</span>@endif</span>
                                 <span class="cell-sub">{{ $u->email }}</span>
+                                <span class="cell-sub">DNI {{ $u->dni ?? '—' }}</span>
                             </span>
                         </a>
                     </td>
-                    <td class="font-monospace">{{ $u->dni ?? '—' }}</td>
                     <td>{{ $u->cargo ?? '—' }}<span class="cell-sub">{{ $u->area }}</span></td>
                     <td>
                         @foreach($u->roles as $r)
                             <span class="etiqueta">{{ \App\Models\User::nombreRol($r->name) }}</span>
                         @endforeach
                     </td>
-                    <td class="text-nowrap">
-                        @if($u->ultimo_acceso)
-                            <span title="{{ $u->ultimo_acceso->format('d/m/Y H:i') }}">{{ $u->ultimo_acceso->diffForHumans() }}</span>
-                        @else
-                            <span class="text-muted">Nunca</span>
-                        @endif
+                    <td>
+                        <x-estado :color="$u->estado_badge">{{ $u->estado_label }}</x-estado>
+                        <span class="cell-sub mt-1" @if($u->ultimo_acceso) title="{{ $u->ultimo_acceso->format('d/m/Y H:i') }}" @endif>
+                            Último acceso: {{ $u->ultimo_acceso?->diffForHumans() ?? 'nunca' }}
+                        </span>
                     </td>
-                    <td><x-estado :color="$u->estado_badge">{{ $u->estado_label }}</x-estado></td>
                     <td>
                         <div class="table-actions">
                             <x-accion tipo="ver" :href="route('admin.usuarios.show', $u)" :nombre="$u->nombre_completo" />
@@ -107,7 +103,7 @@
                     </td>
                 </tr>
             @empty
-                <tr><td colspan="7"><x-vacio icono="people" titulo="No se encontraron usuarios" texto="Pruebe con otros criterios de búsqueda." /></td></tr>
+                <tr><td colspan="5"><x-vacio icono="people" titulo="No se encontraron usuarios" texto="Pruebe con otros criterios de búsqueda." /></td></tr>
             @endforelse
             </tbody>
         </table>

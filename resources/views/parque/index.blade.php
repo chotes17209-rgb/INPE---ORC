@@ -81,7 +81,6 @@
                 <tr>
                     <th scope="col">Placa</th>
                     <th scope="col">Vehículo</th>
-                    <th scope="col" class="text-end">Kilometraje</th>
                     <th scope="col">Documentos</th>
                     <th scope="col">Estado</th>
                     <th scope="col" class="text-end">Acciones</th>
@@ -93,10 +92,10 @@
                 <tr class="{{ $alerta ? 'row-alert' : '' }}">
                     <td><a href="{{ route('parque.vehiculos.show', $v) }}" class="codigo" data-modal>{{ $v->placa }}</a></td>
                     <td>
-                        <span class="cell-main">{{ $v->descripcion }}</span>
-                        <span class="cell-sub">{{ $v->tipo_label }} · {{ $v->anio_fabricacion }}{{ $v->color ? ' · ' . $v->color : '' }}</span>
+                        <span class="cell-main x-nowrap d-block">{{ $v->descripcion }}</span>
+                        <span class="cell-sub">{{ $v->tipo_label }} · {{ $v->anio_fabricacion }}</span>
+                        <span class="cell-sub">{{ number_format($v->kilometraje_actual) }} km</span>
                     </td>
-                    <td class="text-end money">{{ number_format($v->kilometraje_actual) }} km</td>
                     <td class="text-nowrap">
                         <span class="d-block"><span class="text-muted">SOAT:</span> @include('parque.partials.doc', ['vehiculo' => $v, 'campo' => 'fecha_soat'])</span>
                         <span class="d-block mt-1"><span class="text-muted">Rev. técnica:</span> @include('parque.partials.doc', ['vehiculo' => $v, 'campo' => 'fecha_revision_tecnica'])</span>
@@ -112,9 +111,6 @@
                             <x-accion tipo="ver" :href="route('parque.vehiculos.show', $v)" :nombre="$v->placa" />
                             @can('registrar')
                                 <x-accion tipo="editar" :href="route('parque.vehiculos.edit', $v)" :nombre="$v->placa" />
-                                @if($v->estado !== 'baja')
-                                    <x-accion tipo="mantenimiento" :href="route('parque.mantenimientos.create', ['vehiculo_id' => $v->id])" :nombre="$v->placa" />
-                                @endif
                             @endcan
                             @can('aprobar')
                                 <x-accion tipo="eliminar" :href="route('parque.vehiculos.destroy', $v)" :nombre="$v->placa"
@@ -125,7 +121,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6">
+                    <td colspan="5">
                         <x-vacio icono="truck-front" titulo="No se encontraron vehículos"
                                  :texto="$filtrado ? 'Pruebe con otros criterios de búsqueda.' : 'Aún no se ha registrado ningún vehículo.'">
                             @can('registrar')

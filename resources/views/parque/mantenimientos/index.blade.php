@@ -83,8 +83,7 @@
                     <th scope="col">Tipo</th>
                     <th scope="col">Trabajo</th>
                     <th scope="col">Programado</th>
-                    <th scope="col" class="text-end">Importe</th>
-                    <th scope="col">Estado</th>
+                    <th scope="col" class="text-end">Importe y estado</th>
                     <th scope="col" class="text-end">Acciones</th>
                 </tr>
             </thead>
@@ -108,11 +107,10 @@
                             <span class="cell-sub">Ejecutado {{ $m->fecha_realizado->format('d/m/Y') }}</span>
                         @endif
                     </td>
-                    <td class="text-end money">
-                        <span class="fw-semibold">S/ {{ number_format($m->total_efectivo, 2) }}</span>
-                        @if($m->estado !== 'completado')<span class="cell-sub">Estimado</span>@endif
+                    <td class="text-end">
+                        <span class="money fw-semibold d-block">S/ {{ number_format($m->total_efectivo, 2) }}@if($m->estado !== 'completado') <small class="text-muted fw-normal">(estimado)</small>@endif</span>
+                        <x-estado :color="$m->estado_badge" class="mt-1">{{ $m->estado_label }}</x-estado>
                     </td>
-                    <td><x-estado :color="$m->estado_badge">{{ $m->estado_label }}</x-estado></td>
                     <td>
                         <div class="table-actions">
                             <x-accion tipo="ver" :href="route('parque.mantenimientos.show', $m)" :nombre="'del mantenimiento de ' . $m->vehiculo?->placa" texto="Ver" />
@@ -131,7 +129,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7">
+                    <td colspan="6">
                         <x-vacio icono="tools" titulo="No se encontraron mantenimientos"
                                  :texto="$filtrado ? 'Pruebe con otros criterios de búsqueda.' : 'Aún no se ha programado ningún mantenimiento.'">
                             @can('registrar')
